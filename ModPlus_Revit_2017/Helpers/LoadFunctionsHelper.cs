@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 using ModPlusAPI.Interfaces;
+using ModPlusAPI.Windows;
 
 namespace ModPlus_Revit.Helpers
 {
@@ -18,7 +19,6 @@ namespace ModPlus_Revit.Helpers
 
         public static void GetDataFromFunctionIntrface(Assembly loadedFuncAssembly, string fileName)
         {
-            // Есть два интерфейса - старый и новый. Нужно учесть оба
             var types = GetLoadableTypes(loadedFuncAssembly);
             foreach (var type in types)
             {
@@ -43,8 +43,9 @@ namespace ModPlus_Revit.Helpers
                                          "_32x32.png",
                             AvailProductExternalVersion = MpVersionData.CurRevitVers,
                             FullDescription = function.FullDescription,
-                            ToolTipHelpImage = "pack://application:,,,/" + loadedFuncAssembly.GetName().FullName +
-                                               ";component/Resources/Help/" + function.ToolTipHelpImage,
+                            ToolTipHelpImage = !string.IsNullOrEmpty(function.ToolTipHelpImage) 
+                            ? "pack://application:,,,/" + loadedFuncAssembly.GetName().FullName + ";component/Resources/Help/" + function.ToolTipHelpImage 
+                            : string.Empty,
                             SubFunctionsNames = function.SubFunctionsNames,
                             SubFunctionsLNames = function.SubFunctionsLames,
                             SubDescriptions = function.SubDescriptions,
@@ -55,7 +56,6 @@ namespace ModPlus_Revit.Helpers
                             SubClassNames = function.SubClassNames,
                             Location = fileName
                         };
-
                         if (function.SubFunctionsNames != null)
                             foreach (var subFunctionsName in function.SubFunctionsNames)
                             {
@@ -70,8 +70,9 @@ namespace ModPlus_Revit.Helpers
                             foreach (var helpImage in function.SubHelpImages)
                             {
                                 lf.SubHelpImages.Add(
-                                    "pack://application:,,,/" + loadedFuncAssembly.GetName().FullName +
-                                    ";component/Resources/Help/" + helpImage
+                                    !string.IsNullOrEmpty(helpImage)
+                                    ? "pack://application:,,,/" + loadedFuncAssembly.GetName().FullName + ";component/Resources/Help/" + helpImage
+                                    : string.Empty
                                 );
                             }
                         LoadedFunctions.Add(lf);

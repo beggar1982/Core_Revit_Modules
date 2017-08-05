@@ -20,6 +20,8 @@ namespace ModPlus_Revit
         {
             try
             {
+                // statistic
+                Statistic.SendPluginStarting("Revit", MpVersionData.CurRevitVers);
                 // Принудительная загрузка сборок
                 LoadAssms();
                 UserConfigFile.InitConfigFile();
@@ -45,12 +47,6 @@ namespace ModPlus_Revit
         {
             return Result.Succeeded;
         }
-        // проверка соответсвия версии автокада
-        //private static bool CheckCadVersion()
-        //{
-        //    var cadVer = AcApp.Version;
-        //    return (cadVer.Major + "." + cadVer.Minor).Equals(MpVersionData.CurCadInternalVersion);
-        //}
         // Принудительная загрузка сборок
         // необходимых для работы
         private static void LoadAssms()

@@ -151,7 +151,7 @@ namespace ModPlus_Revit.App
         private static PushButtonData CreatePushButtonData(string name, string lName, string description, string img16, 
             string img32, string fullDescription, string helpImage, string location, string className)
         {
-            var pshBtn = new PushButtonData(name, lName, location, className)
+            var pshBtn = new PushButtonData(name,ConvertLName(lName), location, className)
             {
                 ToolTip = description,
             };
@@ -162,8 +162,22 @@ namespace ModPlus_Revit.App
             {
                 if (!string.IsNullOrEmpty(helpImage))
                     pshBtn.ToolTipImage = new BitmapImage(new Uri(helpImage, UriKind.RelativeOrAbsolute));
-                pshBtn.Image = new BitmapImage(new Uri(img16));
-                pshBtn.LargeImage = new BitmapImage(new Uri(img32));
+            }
+            catch 
+            {
+                // ignored
+            }
+            try
+            {
+                pshBtn.Image = new BitmapImage(new Uri(img16, UriKind.RelativeOrAbsolute));
+            }
+            catch
+            {
+                // ignored
+            }
+            try
+            {
+                pshBtn.LargeImage = new BitmapImage(new Uri(img32, UriKind.RelativeOrAbsolute));
             }
             catch
             {
@@ -172,5 +186,27 @@ namespace ModPlus_Revit.App
             return pshBtn;
         }
 
+        private static string ConvertLName(string lName)
+        {
+            if (!lName.Contains(" ")) return lName;
+            if (lName.Length <= 8) return lName;
+            if (lName.Count(x => x == ' ') == 1)
+            {
+                return lName.Split(' ')[0] + Environment.NewLine + lName.Split(' ')[1];
+            }
+            else
+            {
+                var lst = lName.Split(' ');
+                var newLName = string.Empty;
+                int center = (int)(lst.Length / 2.0);
+                for (int i = 0; i < lst.Length; i++)
+                {
+                    var s = lst[i];
+                    if (i != center) newLName = newLName + s;
+                    else newLName = newLName + s + Environment.NewLine;
+                }
+                return newLName;
+            }
+        }
     }
 }
