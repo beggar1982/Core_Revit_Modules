@@ -194,19 +194,23 @@ namespace ModPlus_Revit.App
             {
                 return lName.Split(' ')[0] + Environment.NewLine + lName.Split(' ')[1];
             }
-            else
-            {
-                var lst = lName.Split(' ');
-                var newLName = string.Empty;
-                int center = (int)(lst.Length / 2.0);
-                for (int i = 0; i < lst.Length; i++)
-                {
-                    var s = lst[i];
-                    if (i != center) newLName = newLName + s;
-                    else newLName = newLName + s + Environment.NewLine;
-                }
-                return newLName;
-            }
+            var center = lName.Length * 0.5;
+            var nearestDelta = lName.Select((c, i) => new { index = i, value = c }).Where(w => w.value == ' ')
+                .OrderBy(x => Math.Abs(x.index - center)).First().index;
+            return lName.Substring(0, nearestDelta) + Environment.NewLine + lName.Substring(nearestDelta + 1);
+            //else
+            //{
+            //    var lst = lName.Split(' ');
+            //    var newLName = string.Empty;
+            //    int center = (int)(lst.Length / 2.0);
+            //    for (int i = 0; i < lst.Length; i++)
+            //    {
+            //        var s = lst[i];
+            //        if (i != center) newLName = newLName + s;
+            //        else newLName = newLName + s + Environment.NewLine;
+            //    }
+            //    return newLName;
+            //}
         }
     }
 }
