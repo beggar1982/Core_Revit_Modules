@@ -12,6 +12,7 @@ using MahApps.Metro;
 using MahApps.Metro.Controls;
 using ModPlusAPI;
 using ModPlusAPI.Windows;
+using ModPlusAPI.Windows.Helpers;
 using ComboBox = System.Windows.Controls.ComboBox;
 using Exception = System.Exception;
 using TextBox = System.Windows.Controls.TextBox;
