@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\ModPlus\</OutputPath>
+    <OutputPath>..\..\..\..\..\ModPlus\Extensions\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -24,18 +24,18 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\ModPlus\</OutputPath>
+    <OutputPath>..\..\..\..\..\ModPlus\Extensions\</OutputPath>
     <DefineConstants>TRACE;R2018</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MahApps.Metro">
-      <HintPath>..\..\..\..\..\ModPlus\MahApps.Metro.dll</HintPath>
+      <HintPath>..\..\..\..\..\ModPlus\Extensions\MahApps.Metro.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ModPlusAPI">
-      <HintPath>..\..\..\..\..\ModPlus\ModPlusAPI.dll</HintPath>
+      <HintPath>..\..\..\..\..\ModPlus\Extensions\ModPlusAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore" />

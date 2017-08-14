@@ -14,8 +14,6 @@ namespace ModPlus_Revit
 {
     public class ModPlus : IExternalApplication
     {
-        //public static List<FunctionForCUI> modplusFunctionsForCui;
-
         public Result OnStartup(UIControlledApplication application)
         {
             try
@@ -60,7 +58,7 @@ namespace ModPlus_Revit
                     {
                         var assemblies = key.GetValue("Dll").ToString().Split('/').ToList();
 
-                        foreach (var file in Directory.GetFiles(key.GetValue("TopDir").ToString(), "*.dll", SearchOption.AllDirectories))
+                        foreach (var file in Directory.GetFiles(Constants.ExtensionsDirectory, "*.dll", SearchOption.AllDirectories))
                         {
                             if (assemblies.Contains((new FileInfo(file)).Name))
                             {
@@ -72,9 +70,7 @@ namespace ModPlus_Revit
             }
             catch (Exception exception)
             {
-                // Тут отображение ошибки должно быть в обычном окне, т.к. сборки еще не загрузились
-                TaskDialog.Show("ModPlus", exception.Message + Environment.NewLine + exception.StackTrace,
-                    TaskDialogCommonButtons.Ok);
+                ExceptionBox.Show(exception);
             }
         }
         // Загрузка функций
