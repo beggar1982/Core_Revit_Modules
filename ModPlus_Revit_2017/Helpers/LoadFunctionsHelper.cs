@@ -34,7 +34,7 @@ namespace ModPlus_Revit.Helpers
                             LName = function.LName,
                             Description = function.Description,
                             CanAddToRibbon = function.CanAddToRibbon,
-                            ClassName = function.ClassName,
+                            ClassName = function.FullClassName,
                             SmallIconUrl = "pack://application:,,,/" + loadedFuncAssembly.GetName().FullName +
                                            ";component/Resources/" + function.Name +
                                            "_16x16.png",
