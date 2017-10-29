@@ -43,7 +43,7 @@ namespace ModPlus_Revit.App
 
         private void FillThemesAndColors()
         {
-            ThemeManager.AddAppTheme("DarkBlue", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Themes/DarkBlue.xaml"));
+            LoadThemesAndColors();
             // create accent color menu items for the demo
             AccentColors = ThemeManager.Accents
                                             .Select(a => new AccentColorMenuData() { Name = a.Name, ColorBrush = a.Resources["AccentColorBrush"] as Brush })
@@ -77,6 +77,31 @@ namespace ModPlus_Revit.App
             {
                 //ignored
             }
+        }
+        private static void LoadThemesAndColors()
+        {
+            // Загрузка тем
+            ThemeManager.AddAppTheme("DarkBlue", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Themes/DarkBlue.xaml"));
+            // Загрузка акцентных цветов
+            ThemeManager.AddAccent("mdAmber", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdAmber.xaml"));
+            ThemeManager.AddAccent("mdBlue", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdBlue.xaml"));
+            ThemeManager.AddAccent("mdBlueGrey", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdBlueGrey.xaml"));
+            ThemeManager.AddAccent("mdBrown", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdBrown.xaml"));
+            ThemeManager.AddAccent("mdCyan", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdCyan.xaml"));
+            ThemeManager.AddAccent("mdDeepOrange", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdDeepOrange.xaml"));
+            ThemeManager.AddAccent("mdDeepPurple", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdDeepPurple.xaml"));
+            ThemeManager.AddAccent("mdGreen", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdGreen.xaml"));
+            ThemeManager.AddAccent("mdGrey", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdGrey.xaml"));
+            ThemeManager.AddAccent("mdIndigo", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdIndigo.xaml"));
+            ThemeManager.AddAccent("mdLightBlue", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdLightBlue.xaml"));
+            ThemeManager.AddAccent("mdLightGreen", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdLightGreen.xaml"));
+            ThemeManager.AddAccent("mdLime", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdLime.xaml"));
+            ThemeManager.AddAccent("mdOrange", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdOrange.xaml"));
+            ThemeManager.AddAccent("mdPink", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdPink.xaml"));
+            ThemeManager.AddAccent("mdPurple", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdPurple.xaml"));
+            ThemeManager.AddAccent("mdRed", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdRed.xaml"));
+            ThemeManager.AddAccent("mdTeal", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdTeal.xaml"));
+            ThemeManager.AddAccent("mdYellow", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdYellow.xaml"));
         }
         // Заполнение поля Ключ продукта
         private void SetAppRegistryKeyForCurrentUser()
