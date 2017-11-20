@@ -51,20 +51,12 @@ namespace ModPlus_Revit
         {
             try
             {
-                var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("ModPlus");
-                using (key)
+                foreach (var fileName in Constants.ExtensionsLibraries)
                 {
-                    if (key != null)
+                    var extDll = Path.Combine(Constants.ExtensionsDirectory, fileName);
+                    if (File.Exists(extDll))
                     {
-                        var assemblies = key.GetValue("Dll").ToString().Split('/').ToList();
-
-                        foreach (var file in Directory.GetFiles(Constants.ExtensionsDirectory, "*.dll", SearchOption.AllDirectories))
-                        {
-                            if (assemblies.Contains((new FileInfo(file)).Name))
-                            {
-                                Assembly.LoadFrom(file);
-                            }
-                        }
+                        Assembly.LoadFrom(extDll);
                     }
                 }
             }
