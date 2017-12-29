@@ -18,6 +18,8 @@ namespace ModPlus_Revit
         {
             try
             {
+                // inint lang
+                Language.Initialize();
                 // statistic
                 Statistic.SendPluginStarting("Revit", MpVersionData.CurRevitVers);
                 // Принудительная загрузка сборок
@@ -73,7 +75,9 @@ namespace ModPlus_Revit
                 // Расположение файла конфигурации
                 var confF = UserConfigFile.FullFileName;
                 // Грузим
-                var configFile = XElement.Load(confF);
+                XElement configFile;
+                using (FileStream fs = new FileStream(confF, FileMode.Open, FileAccess.Read, FileShare.None))
+                    configFile = XElement.Load(fs);
                 // Делаем итерацию по значениям в файле конфигурации
                 var xElement = configFile.Element("Config");
                 var el = xElement?.Element("Functions");
@@ -153,9 +157,7 @@ namespace ModPlus_Revit
                 return e.Types.Where(t => t != null);
             }
         }
-        /// <summary>
-        /// Проверка загруженности модуля автообновления
-        /// </summary>
+        /// <summary>Проверка загруженности модуля автообновления</summary>
         private static void CheckAutoUpdaterLoaded()
         {
             try

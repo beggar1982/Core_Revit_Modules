@@ -109,5 +109,10 @@
   <ItemGroup>
     <Folder Include="Windows\" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\ModPlus_Revit_2017\Resources\forIcon_256.png">
+      <Link>Resources\forIcon_256.png</Link>
+    </Resource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

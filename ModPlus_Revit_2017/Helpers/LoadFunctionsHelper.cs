@@ -6,7 +6,10 @@ using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 using ModPlusAPI.Interfaces;
-using ModPlusAPI.Windows;
+
+/* Функция из файла конфигурации читаю в том виде, в каком они там сохранены
+ * А вот получение локализованных значений (имя, описание, полное описание)
+ * происходит при построении ленты */
 
 namespace ModPlus_Revit.Helpers
 {
@@ -25,8 +28,7 @@ namespace ModPlus_Revit.Helpers
                 var interf = type.GetInterface(typeof(IModPlusFunctionInterface).Name);
                 if (interf != null)
                 {
-                    var function = Activator.CreateInstance(type) as IModPlusFunctionInterface;
-                    if (function != null)
+                    if (Activator.CreateInstance(type) is IModPlusFunctionInterface function)
                     {
                         var lf = new LoadedFunction
                         {

@@ -6,10 +6,10 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using MahApps.Metro;
-using MahApps.Metro.Controls;
 using ModPlusAPI;
 using ModPlusAPI.Windows;
 using ModPlusAPI.Windows.Helpers;
@@ -20,14 +20,15 @@ using Visibility = System.Windows.Visibility;
 
 namespace ModPlus_Revit.App
 {
-    public partial class MpMainSettings : MetroWindow
+    public partial class MpMainSettings
     {
         private string _curUserEmail = string.Empty;
         private string _curTheme = string.Empty;
         private string _curColor = string.Empty;
-        private string _curBordersType = string.Empty;
+        private readonly string _curLang;
         public List<AccentColorMenuData> AccentColors { get; set; }
         public List<AppThemeMenuData> AppThemes { get; set; }
+        private static string _langItem = "RevitDlls";
 
         public MpMainSettings()
         {
@@ -39,8 +40,25 @@ namespace ModPlus_Revit.App
             GetDataByVars();
             Closing += MpMainSettings_Closing;
             Closed += MpMainSettings_OnClosed;
+            ModPlusAPI.Language.SetLanguageProviderForWindow(this);
+            // fill languages
+            CbLanguages.ItemsSource = ModPlusAPI.Language.GetLanguagesByFiles();
+            CbLanguages.SelectedItem = ((List<Language.LangItem>)CbLanguages.ItemsSource)
+                .FirstOrDefault(x => x.Name.Equals(ModPlusAPI.Language.CurrentLanguageName));
+            _curLang = ((Language.LangItem)CbLanguages.SelectedItem)?.Name;
+            CbLanguages.SelectionChanged += CbLanguages_SelectionChanged;
+            // image
+            WinIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Modplus_Revit_" + MpVersionData.CurRevitVers + ";component/Resources/forIcon_256.png"));
         }
-
+        // Change language
+        private void CbLanguages_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ComboBox cb && cb.SelectedItem is Language.LangItem langItem)
+            {
+                ModPlusAPI.Language.SetCurrentLanguage(langItem);
+                ModPlusAPI.Language.SetLanguageProviderForWindow(this);
+            }
+        }
         private void FillThemesAndColors()
         {
             LoadThemesAndColors();
@@ -112,9 +130,11 @@ namespace ModPlus_Revit.App
             {
                 TbAboutRegKey.Visibility = Visibility.Visible;
                 if (regVariant.Equals("0"))
-                    TbAboutRegKey.Text = "Ключ привязан к физическому диску " + UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.User, "HDmodel");
+                    TbAboutRegKey.Text = ModPlusAPI.Language.GetItem(_langItem, "h10") + " " +
+                        UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.User, "HDmodel");
                 else if (regVariant.Equals("1"))
-                    TbAboutRegKey.Text = "Ключ привязан к аккаунту Google: " + UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.User, "gName");
+                    TbAboutRegKey.Text = ModPlusAPI.Language.GetItem(_langItem, "h11") + " " +
+                        UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.User, "gName");
             }
         }
 
@@ -156,7 +176,6 @@ namespace ModPlus_Revit.App
                 }
             }
             if (CbWindowsBorders.SelectedIndex == -1) CbWindowsBorders.SelectedIndex = 3;
-            _curBordersType = ((ComboBoxItem)CbWindowsBorders.SelectedItem).Tag.ToString();
         }
         /// <summary>
         /// Получение значений из глобальных переменных плагина
@@ -195,8 +214,7 @@ namespace ModPlus_Revit.App
         private void CbWindowsBorders_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var cb = sender as ComboBox;
-            var cbi = cb?.SelectedItem as ComboBoxItem;
-            if (cbi == null) return;
+            if (!(cb?.SelectedItem is ComboBoxItem cbi)) return;
             this.ChangeWindowBordes(cbi.Tag.ToString());
             UserConfigFile.SetValue(UserConfigFile.ConfigFileZone.Settings, "MainSet", "BordersType", cbi.Tag.ToString(), true);
         }
@@ -210,8 +228,8 @@ namespace ModPlus_Revit.App
                 else
                 {
                     TbEmailAdress.BorderBrush = Brushes.Red;
-                    ModPlusAPI.Windows.MessageBox.Show("Указанный адрес почты не прошел проверку!" + Environment.NewLine +
-                                  "Или вы ошиблись в указании адреса почты или у вас оооочень уникальный хостер почты =)");
+                    ModPlusAPI.Windows.MessageBox.Show(
+                        ModPlusAPI.Language.GetItem(_langItem, "tt4"));
                     TbEmailAdress.Focus();
                     e.Cancel = true;
                 }
@@ -233,6 +251,10 @@ namespace ModPlus_Revit.App
                     using (key)
                         key?.SetValue("email", TbEmailAdress.Text);
                 }
+                if (!((Language.LangItem)CbLanguages.SelectedItem).Name.Equals(_curLang))
+                {
+                    ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(_langItem, "tt5"));
+                }
             }
             catch (Exception ex)
             {
@@ -240,33 +262,9 @@ namespace ModPlus_Revit.App
             }
 
         }
-        // Сохранение в файл конфигурации значений вкл/выкл для меню
-        // Имена должны начинаться с ChkMp!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        private void Menues_OnChecked_Unchecked(object sender, RoutedEventArgs e)
-        {
-            var chkBox = sender as CheckBox;
-            if (chkBox == null) return;
-            var name = chkBox.Name;
-            UserConfigFile.SetValue(UserConfigFile.ConfigFileZone.Settings, "MainSet",
-                name.Substring(5),
-                chkBox.IsChecked?.ToString(),
-                true
-                );
-        }
-        // Сворачивать в - для плавающего меню
-        private void CbFloatMenuCollapseTo_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var cb = sender as ComboBox;
-            if (cb != null)
-            {
-                UserConfigFile.SetValue(UserConfigFile.ConfigFileZone.Settings, "MainSet", "FloatMenuCollapseTo",
-                    cb.SelectedIndex.ToString(CultureInfo.InvariantCulture), true);
-            }
-        }
         private void TbEmailAdress_OnLostFocus(object sender, RoutedEventArgs e)
         {
-            var tb = sender as TextBox;
-            if (tb != null)
+            if (sender is TextBox tb)
             {
                 if (IsValidEmail(tb.Text))
                     tb.BorderBrush = FindResource("TextBoxBorderBrush") as Brush;
@@ -306,7 +304,7 @@ namespace ModPlus_Revit.App
         {
             var win = new MpMainSettings();
             win.ShowDialog();
-            return Autodesk.Revit.UI.Result.Succeeded;
+            return Result.Succeeded;
         }
     }
 }
