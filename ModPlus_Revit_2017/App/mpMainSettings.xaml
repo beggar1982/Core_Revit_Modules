@@ -51,7 +51,7 @@
                         <RowDefinition Height="Auto"></RowDefinition>
                     </Grid.RowDefinitions>
                     <!-- Language -->
-                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Visibility="Collapsed">
                     <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=h5}"
                                MinWidth="120"
                                VerticalAlignment="Center" Margin="2"></TextBlock>
