@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -67,91 +68,139 @@ namespace ModPlus_Revit.App
                             Language.TryGetCuiLocalGroupName(group.Attribute("GroupName")?.Value));
 
                         // Проходим по функциям группы
-                        foreach (var func in group.Elements("Function"))
+                        foreach (var item in group.Elements())
                         {
-                            if (LoadFunctionsHelper.LoadedFunctions.Any(x => x.Name.Equals(func.Attribute("Name")?.Value)))
+                            if (item.Name == "Function")
                             {
-                                var loadedFunction = LoadFunctionsHelper.LoadedFunctions.FirstOrDefault(x => x.Name.Equals(func.Attribute("Name")?.Value));
-                                if (loadedFunction == null) continue;
-                                // Если функция имеет "подфункции", то делаем SplitButton
-                                if (func.Elements("SubFunction").Any())
+                                var func = item;
+                                if (LoadFunctionsHelper.LoadedFunctions.Any(x => x.Name.Equals(func.Attribute("Name")?.Value)))
                                 {
-                                    SplitButtonData splitButtonData = new SplitButtonData(
-                                        loadedFunction.Name,
-                                        Language.GetFunctionLocalName(loadedFunction.Name, loadedFunction.LName)
-                                        );
-                                    SplitButton sb = panel.AddItem(splitButtonData) as SplitButton;
-                                    // add top function
-                                    sb?.AddPushButton(CreatePushButtonData(
-                                        loadedFunction.Name,
-                                        Language.GetFunctionLocalName(loadedFunction.Name, loadedFunction.LName),
-                                        Language.GetFunctionShortDescrition(loadedFunction.Name, loadedFunction.Description),
-                                        loadedFunction.SmallIconUrl,
-                                        loadedFunction.BigIconUrl,
-                                        Language.GetFunctionFullDescription(loadedFunction.Name, loadedFunction.FullDescription),
-                                        loadedFunction.ToolTipHelpImage, loadedFunction.Location, loadedFunction.ClassName
-                                    ));
-                                    // Затем добавляем подфункции
-                                    foreach (var subFunc in func.Elements("SubFunction"))
+                                    var loadedFunction =
+                                        LoadFunctionsHelper.LoadedFunctions.FirstOrDefault(x =>
+                                            x.Name.Equals(func.Attribute("Name")?.Value));
+                                    if (loadedFunction == null) continue;
+                                    // Если функция имеет "подфункции", то делаем SplitButton
+                                    if (func.Elements("SubFunction").Any())
                                     {
-                                        var loadedSubFunction = LoadFunctionsHelper.LoadedFunctions.FirstOrDefault(x => x.Name.Equals(subFunc.Attribute("Name")?.Value));
-                                        if (loadedSubFunction == null) continue;
+                                        SplitButtonData splitButtonData = new SplitButtonData(
+                                            loadedFunction.Name,
+                                            Language.GetFunctionLocalName(loadedFunction.Name, loadedFunction.LName)
+                                        );
+                                        SplitButton sb = panel.AddItem(splitButtonData) as SplitButton;
+                                        // add top function
                                         sb?.AddPushButton(CreatePushButtonData(
-                                            loadedSubFunction.Name,
+                                            loadedFunction.Name,
+                                            Language.GetFunctionLocalName(loadedFunction.Name, loadedFunction.LName),
+                                            Language.GetFunctionShortDescrition(loadedFunction.Name,
+                                                loadedFunction.Description),
+                                            loadedFunction.SmallIconUrl,
+                                            loadedFunction.BigIconUrl,
+                                            Language.GetFunctionFullDescription(loadedFunction.Name,
+                                                loadedFunction.FullDescription),
+                                            loadedFunction.ToolTipHelpImage, loadedFunction.Location,
+                                            loadedFunction.ClassName
+                                        ));
+                                        // Затем добавляем подфункции
+                                        foreach (var subFunc in func.Elements("SubFunction"))
+                                        {
+                                            var loadedSubFunction =
+                                                LoadFunctionsHelper.LoadedFunctions.FirstOrDefault(x =>
+                                                    x.Name.Equals(subFunc.Attribute("Name")?.Value));
+                                            if (loadedSubFunction == null) continue;
+                                            sb?.AddPushButton(CreatePushButtonData(
+                                                loadedSubFunction.Name,
+                                                Language.GetFunctionLocalName(loadedFunction.Name,
+                                                    loadedFunction.LName),
+                                                Language.GetFunctionShortDescrition(loadedFunction.Name,
+                                                    loadedFunction.Description),
+                                                loadedSubFunction.SmallIconUrl,
+                                                loadedSubFunction.BigIconUrl,
+                                                Language.GetFunctionFullDescription(loadedFunction.Name,
+                                                    loadedFunction.FullDescription),
+                                                loadedSubFunction.ToolTipHelpImage,
+                                                loadedSubFunction.Location, loadedSubFunction.ClassName
+                                            ));
+                                        }
+                                    }
+                                    else if (loadedFunction.SubFunctionsNames.Any())
+                                    {
+                                        SplitButtonData splitButtonData = new SplitButtonData(
+                                            loadedFunction.Name,
+                                            Language.GetFunctionLocalName(loadedFunction.Name, loadedFunction.LName)
+                                        );
+                                        SplitButton sb = panel.AddItem(splitButtonData) as SplitButton;
+                                        // add top function
+                                        sb?.AddPushButton(CreatePushButtonData(
+                                            loadedFunction.Name,
+                                            Language.GetFunctionLocalName(loadedFunction.Name, loadedFunction.LName),
+                                            Language.GetFunctionShortDescrition(loadedFunction.Name,
+                                                loadedFunction.Description),
+                                            loadedFunction.SmallIconUrl,
+                                            loadedFunction.BigIconUrl,
+                                            Language.GetFunctionFullDescription(loadedFunction.Name,
+                                                loadedFunction.FullDescription),
+                                            loadedFunction.ToolTipHelpImage,
+                                            loadedFunction.Location, loadedFunction.ClassName
+                                        ));
+                                        for (int i = 0; i < loadedFunction.SubClassNames.Count; i++)
+                                        {
+                                            sb?.AddPushButton(CreatePushButtonData(
+                                                loadedFunction.SubFunctionsNames[i],
+                                                Language.GetFunctionLocalName(loadedFunction.Name,
+                                                    loadedFunction.SubFunctionsLNames[i], i + 1),
+                                                Language.GetFunctionShortDescrition(loadedFunction.Name,
+                                                    loadedFunction.SubDescriptions[i], i + 1),
+                                                loadedFunction.SubSmallIconsUrl[i], loadedFunction.SubBigIconsUrl[i],
+                                                Language.GetFunctionFullDescription(loadedFunction.Name,
+                                                    loadedFunction.SubFullDescriptions[i], i + 1),
+                                                loadedFunction.SubHelpImages[i], loadedFunction.Location,
+                                                loadedFunction.SubClassNames[i]
+                                            ));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        AddPushButton(panel,
+                                            loadedFunction.Name,
                                             Language.GetFunctionLocalName(loadedFunction.Name, loadedFunction.LName),
                                             Language.GetFunctionShortDescrition(loadedFunction.Name, loadedFunction.Description),
-                                            loadedSubFunction.SmallIconUrl,
-                                            loadedSubFunction.BigIconUrl,
+                                            loadedFunction.SmallIconUrl,
+                                            loadedFunction.BigIconUrl,
                                             Language.GetFunctionFullDescription(loadedFunction.Name, loadedFunction.FullDescription),
-                                            loadedSubFunction.ToolTipHelpImage,
-                                            loadedSubFunction.Location, loadedSubFunction.ClassName
-                                        ));
+                                            loadedFunction.ToolTipHelpImage,
+                                            loadedFunction.Location,
+                                            loadedFunction.ClassName);
                                     }
                                 }
-                                else if (loadedFunction.SubFunctionsNames.Any())
+                            }
+                            if (item.Name == "StackedPanel")
+                            {
+                                List<RibbonItemData> stackedItems = new List<RibbonItemData>();
+
+                                foreach (XElement func in item.Elements("Function"))
                                 {
-                                    SplitButtonData splitButtonData = new SplitButtonData(
-                                        loadedFunction.Name,
-                                        Language.GetFunctionLocalName(loadedFunction.Name, loadedFunction.LName)
-                                        );
-                                    SplitButton sb = panel.AddItem(splitButtonData) as SplitButton;
-                                    // add top function
-                                    sb?.AddPushButton(CreatePushButtonData(
-                                        loadedFunction.Name,
-                                        Language.GetFunctionLocalName(loadedFunction.Name, loadedFunction.LName),
-                                        Language.GetFunctionShortDescrition(loadedFunction.Name, loadedFunction.Description),
-                                        loadedFunction.SmallIconUrl,
-                                        loadedFunction.BigIconUrl,
-                                        Language.GetFunctionFullDescription(loadedFunction.Name, loadedFunction.FullDescription),
-                                        loadedFunction.ToolTipHelpImage,
-                                        loadedFunction.Location, loadedFunction.ClassName
-                                    ));
-                                    for (int i = 0; i < loadedFunction.SubClassNames.Count; i++)
-                                    {
-                                        sb?.AddPushButton(CreatePushButtonData(
-                                            loadedFunction.SubFunctionsNames[i],
-                                            Language.GetFunctionLocalName(loadedFunction.Name, loadedFunction.SubFunctionsLNames[i], i + 1),
-                                            Language.GetFunctionShortDescrition(loadedFunction.Name, loadedFunction.SubDescriptions[i], i + 1),
-                                            loadedFunction.SubSmallIconsUrl[i], loadedFunction.SubBigIconsUrl[i],
-                                            Language.GetFunctionFullDescription(loadedFunction.Name, loadedFunction.SubFullDescriptions[i], i + 1),
-                                            loadedFunction.SubHelpImages[i], loadedFunction.Location,
-                                            loadedFunction.SubClassNames[i]
-                                        ));
-                                    }
+                                    var loadedFunction =
+                                        LoadFunctionsHelper.LoadedFunctions.FirstOrDefault(x =>
+                                            x.Name.Equals(func.Attribute("Name")?.Value));
+                                    if (loadedFunction == null) continue;
+
+                                    stackedItems.Add(
+                                        CreatePushButtonData(
+                                            loadedFunction.Name,
+                                            Language.GetFunctionLocalName(loadedFunction.Name, loadedFunction.LName),
+                                            Language.GetFunctionShortDescrition(loadedFunction.Name, loadedFunction.Description),
+                                            loadedFunction.SmallIconUrl,
+                                            loadedFunction.BigIconUrl,
+                                            Language.GetFunctionFullDescription(loadedFunction.Name, loadedFunction.FullDescription),
+                                            loadedFunction.ToolTipHelpImage,
+                                            loadedFunction.Location,
+                                            loadedFunction.ClassName));
                                 }
-                                else
-                                {
-                                    AddPushButton(panel,
-                                        loadedFunction.Name,
-                                        Language.GetFunctionLocalName(loadedFunction.Name, loadedFunction.LName),
-                                        Language.GetFunctionShortDescrition(loadedFunction.Name, loadedFunction.Description),
-                                        loadedFunction.SmallIconUrl,
-                                        loadedFunction.BigIconUrl,
-                                        Language.GetFunctionFullDescription(loadedFunction.Name, loadedFunction.FullDescription),
-                                        loadedFunction.ToolTipHelpImage,
-                                        loadedFunction.Location,
-                                        loadedFunction.ClassName);
-                                }
+
+                                if (stackedItems.Count == 2)
+                                    panel.AddStackedItems(stackedItems[0], stackedItems[1]);
+                                if (stackedItems.Count == 3)
+                                    panel.AddStackedItems(stackedItems[0], stackedItems[1], stackedItems[2]);
                             }
                         }
                     }

@@ -38,7 +38,8 @@
       <HintPath>..\..\..\..\..\ModPlus\Extensions\MahApps.Metro.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="ModPlusAPI">
+    <Reference Include="ModPlusAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\ModPlus\Extensions\ModPlusAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
