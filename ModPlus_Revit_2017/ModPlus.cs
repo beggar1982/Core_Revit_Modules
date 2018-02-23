@@ -83,8 +83,6 @@ namespace ModPlus_Revit
                 var el = xElement?.Element("Functions");
                 if (el != null)
                 {
-                    //modplusFunctionsForCui = new List<FunctionForCUI>();
-
                     foreach (var conFunc in el.Elements("function"))
                     {
                         /* Так как после обновления добавится значение 

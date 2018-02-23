@@ -87,17 +87,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\HelpBt.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\icon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\mpIcon.ico" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="..\ModPlus_Revit_2017\App\mpMainSettings.xaml">

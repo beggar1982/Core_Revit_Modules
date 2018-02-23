@@ -41,11 +41,11 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="RevitAPI">
-      <HintPath>..\..\_Revit dlls\2018\RevitAPI.dll</HintPath>
+      <HintPath>..\..\..\_Revit dlls\2018\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="RevitAPIUI">
-      <HintPath>..\..\_Revit dlls\2018\RevitAPIUI.dll</HintPath>
+      <HintPath>..\..\..\_Revit dlls\2018\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -81,17 +81,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\HelpBt.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\icon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\mpIcon.ico" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Windows\" />

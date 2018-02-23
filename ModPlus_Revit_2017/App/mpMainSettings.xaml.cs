@@ -6,17 +6,11 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
 using MahApps.Metro;
 using ModPlusAPI;
 using ModPlusAPI.Windows;
 using ModPlusAPI.Windows.Helpers;
-using ComboBox = System.Windows.Controls.ComboBox;
-using Exception = System.Exception;
-using TextBox = System.Windows.Controls.TextBox;
-using Visibility = System.Windows.Visibility;
 
 namespace ModPlus_Revit.App
 {
@@ -28,27 +22,24 @@ namespace ModPlus_Revit.App
         private readonly string _curLang;
         public List<AccentColorMenuData> AccentColors { get; set; }
         public List<AppThemeMenuData> AppThemes { get; set; }
-        private static string _langItem = "RevitDlls";
+        private const string LangItem = "RevitDlls";
 
         public MpMainSettings()
         {
             InitializeComponent();
+            Title = ModPlusAPI.Language.GetItem(LangItem, "h1");
             FillThemesAndColors();
-            ChangeWindowTheme();
             SetAppRegistryKeyForCurrentUser();
             GetDataFromConfigFile();
             GetDataByVars();
             Closing += MpMainSettings_Closing;
             Closed += MpMainSettings_OnClosed;
-            ModPlusAPI.Language.SetLanguageProviderForWindow(this);
             // fill languages
             CbLanguages.ItemsSource = ModPlusAPI.Language.GetLanguagesByFiles();
             CbLanguages.SelectedItem = ((List<Language.LangItem>)CbLanguages.ItemsSource)
                 .FirstOrDefault(x => x.Name.Equals(ModPlusAPI.Language.CurrentLanguageName));
             _curLang = ((Language.LangItem)CbLanguages.SelectedItem)?.Name;
             CbLanguages.SelectionChanged += CbLanguages_SelectionChanged;
-            // image
-            WinIcon.Source = new BitmapImage(new Uri("pack://application:,,,/Modplus_Revit_" + MpVersionData.CurRevitVers + ";component/Resources/forIcon_256.png"));
         }
         // Change language
         private void CbLanguages_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -61,7 +52,6 @@ namespace ModPlus_Revit.App
         }
         private void FillThemesAndColors()
         {
-            LoadThemesAndColors();
             // create accent color menu items for the demo
             AccentColors = ThemeManager.Accents
                                             .Select(a => new AccentColorMenuData() { Name = a.Name, ColorBrush = a.Resources["AccentColorBrush"] as Brush })
@@ -96,31 +86,6 @@ namespace ModPlus_Revit.App
                 //ignored
             }
         }
-        private static void LoadThemesAndColors()
-        {
-            // Загрузка тем
-            ThemeManager.AddAppTheme("DarkBlue", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Themes/DarkBlue.xaml"));
-            // Загрузка акцентных цветов
-            ThemeManager.AddAccent("mdAmber", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdAmber.xaml"));
-            ThemeManager.AddAccent("mdBlue", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdBlue.xaml"));
-            ThemeManager.AddAccent("mdBlueGrey", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdBlueGrey.xaml"));
-            ThemeManager.AddAccent("mdBrown", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdBrown.xaml"));
-            ThemeManager.AddAccent("mdCyan", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdCyan.xaml"));
-            ThemeManager.AddAccent("mdDeepOrange", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdDeepOrange.xaml"));
-            ThemeManager.AddAccent("mdDeepPurple", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdDeepPurple.xaml"));
-            ThemeManager.AddAccent("mdGreen", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdGreen.xaml"));
-            ThemeManager.AddAccent("mdGrey", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdGrey.xaml"));
-            ThemeManager.AddAccent("mdIndigo", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdIndigo.xaml"));
-            ThemeManager.AddAccent("mdLightBlue", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdLightBlue.xaml"));
-            ThemeManager.AddAccent("mdLightGreen", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdLightGreen.xaml"));
-            ThemeManager.AddAccent("mdLime", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdLime.xaml"));
-            ThemeManager.AddAccent("mdOrange", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdOrange.xaml"));
-            ThemeManager.AddAccent("mdPink", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdPink.xaml"));
-            ThemeManager.AddAccent("mdPurple", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdPurple.xaml"));
-            ThemeManager.AddAccent("mdRed", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdRed.xaml"));
-            ThemeManager.AddAccent("mdTeal", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdTeal.xaml"));
-            ThemeManager.AddAccent("mdYellow", new Uri("pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Accents/mdYellow.xaml"));
-        }
         // Заполнение поля Ключ продукта
         private void SetAppRegistryKeyForCurrentUser()
         {
@@ -128,12 +93,12 @@ namespace ModPlus_Revit.App
             var regVariant = UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.User, "RegestryVariant");
             if (!string.IsNullOrEmpty(regVariant))
             {
-                TbAboutRegKey.Visibility = Visibility.Visible;
+                TbAboutRegKey.Visibility = System.Windows.Visibility.Visible;
                 if (regVariant.Equals("0"))
-                    TbAboutRegKey.Text = ModPlusAPI.Language.GetItem(_langItem, "h10") + " " +
+                    TbAboutRegKey.Text = ModPlusAPI.Language.GetItem(LangItem, "h10") + " " +
                         UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.User, "HDmodel");
                 else if (regVariant.Equals("1"))
-                    TbAboutRegKey.Text = ModPlusAPI.Language.GetItem(_langItem, "h11") + " " +
+                    TbAboutRegKey.Text = ModPlusAPI.Language.GetItem(LangItem, "h11") + " " +
                         UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.User, "gName");
             }
         }
@@ -229,7 +194,7 @@ namespace ModPlus_Revit.App
                 {
                     TbEmailAdress.BorderBrush = Brushes.Red;
                     ModPlusAPI.Windows.MessageBox.Show(
-                        ModPlusAPI.Language.GetItem(_langItem, "tt4"));
+                        ModPlusAPI.Language.GetItem(LangItem, "tt4"));
                     TbEmailAdress.Focus();
                     e.Cancel = true;
                 }
@@ -253,7 +218,7 @@ namespace ModPlus_Revit.App
                 }
                 if (!((Language.LangItem)CbLanguages.SelectedItem).Name.Equals(_curLang))
                 {
-                    ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(_langItem, "tt5"));
+                    ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "tt5"));
                 }
             }
             catch (Exception ex)
@@ -298,13 +263,13 @@ namespace ModPlus_Revit.App
     }
 
     [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
-    public class MpMainSettingsFunction : IExternalCommand
+    public class MpMainSettingsFunction : Autodesk.Revit.UI.IExternalCommand
     {
-        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
+        public Autodesk.Revit.UI.Result Execute(Autodesk.Revit.UI.ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             var win = new MpMainSettings();
             win.ShowDialog();
-            return Result.Succeeded;
+            return Autodesk.Revit.UI.Result.Succeeded;
         }
     }
 }

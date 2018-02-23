@@ -47,14 +47,18 @@ namespace ModPlus_Revit.App
                 // Проверяем есть ли группа Config
                 if (configFile.Element("Config") == null)
                 {
-                    MessageBox.Show(Language.GetItem(_langItem, "err1"), MessageBoxIcon.Close);
+                    //MessageBox.Show(Language.GetItem(_langItem, "err1"), MessageBoxIcon.Close);
+                    // Тут отображение ошибки должно быть в обычном окне, т.к. сборки могли еще не загрузилится
+                    TaskDialog.Show("ModPlus", Language.GetItem(_langItem, "err1"), TaskDialogCommonButtons.Ok);
                     return;
                 }
                 var element = configFile.Element("Config");
                 // Проверяем есть ли подгруппа Cui
                 if (element?.Element("CUIRevit") == null)
                 {
-                    MessageBox.Show(Language.GetItem(_langItem, "err1"), MessageBoxIcon.Close);
+                    //MessageBox.Show(Language.GetItem(_langItem, "err1"), MessageBoxIcon.Close);
+                    // Тут отображение ошибки должно быть в обычном окне, т.к. сборки могли еще не загрузилится
+                    TaskDialog.Show("ModPlus", Language.GetItem(_langItem, "err1"), TaskDialogCommonButtons.Ok);
                     return;
                 }
                 var confCuiXel = element.Element("CUIRevit");
@@ -64,7 +68,7 @@ namespace ModPlus_Revit.App
                     {
                         // create the panel
                         RibbonPanel panel = application.CreateRibbonPanel(
-                            _tabName, 
+                            _tabName,
                             Language.TryGetCuiLocalGroupName(group.Attribute("GroupName")?.Value));
 
                         // Проходим по функциям группы
@@ -73,7 +77,8 @@ namespace ModPlus_Revit.App
                             if (item.Name == "Function")
                             {
                                 var func = item;
-                                if (LoadFunctionsHelper.LoadedFunctions.Any(x => x.Name.Equals(func.Attribute("Name")?.Value)))
+                                if (LoadFunctionsHelper.LoadedFunctions.Any(x => x.Name.Equals(func.Attribute("Name")
+                                    ?.Value)))
                                 {
                                     var loadedFunction =
                                         LoadFunctionsHelper.LoadedFunctions.FirstOrDefault(x =>
@@ -163,10 +168,12 @@ namespace ModPlus_Revit.App
                                         AddPushButton(panel,
                                             loadedFunction.Name,
                                             Language.GetFunctionLocalName(loadedFunction.Name, loadedFunction.LName),
-                                            Language.GetFunctionShortDescrition(loadedFunction.Name, loadedFunction.Description),
+                                            Language.GetFunctionShortDescrition(loadedFunction.Name,
+                                                loadedFunction.Description),
                                             loadedFunction.SmallIconUrl,
                                             loadedFunction.BigIconUrl,
-                                            Language.GetFunctionFullDescription(loadedFunction.Name, loadedFunction.FullDescription),
+                                            Language.GetFunctionFullDescription(loadedFunction.Name,
+                                                loadedFunction.FullDescription),
                                             loadedFunction.ToolTipHelpImage,
                                             loadedFunction.Location,
                                             loadedFunction.ClassName);
@@ -188,10 +195,12 @@ namespace ModPlus_Revit.App
                                         CreatePushButtonData(
                                             loadedFunction.Name,
                                             Language.GetFunctionLocalName(loadedFunction.Name, loadedFunction.LName),
-                                            Language.GetFunctionShortDescrition(loadedFunction.Name, loadedFunction.Description),
+                                            Language.GetFunctionShortDescrition(loadedFunction.Name,
+                                                loadedFunction.Description),
                                             loadedFunction.SmallIconUrl,
                                             loadedFunction.BigIconUrl,
-                                            Language.GetFunctionFullDescription(loadedFunction.Name, loadedFunction.FullDescription),
+                                            Language.GetFunctionFullDescription(loadedFunction.Name,
+                                                loadedFunction.FullDescription),
                                             loadedFunction.ToolTipHelpImage,
                                             loadedFunction.Location,
                                             loadedFunction.ClassName));
@@ -205,7 +214,10 @@ namespace ModPlus_Revit.App
                         }
                     }
             }
-            catch (Exception exception) { ExceptionBox.Show(exception); }
+            catch (Exception exception)
+            {
+                ExceptionBox.Show(exception);
+            }
         }
         private static void AddHelpPanel(UIControlledApplication application)
         {
