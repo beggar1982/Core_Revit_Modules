@@ -47,18 +47,14 @@ namespace ModPlus_Revit.App
                 // Проверяем есть ли группа Config
                 if (configFile.Element("Config") == null)
                 {
-                    //MessageBox.Show(Language.GetItem(_langItem, "err1"), MessageBoxIcon.Close);
-                    // Тут отображение ошибки должно быть в обычном окне, т.к. сборки могли еще не загрузилится
-                    TaskDialog.Show("ModPlus", Language.GetItem(_langItem, "err1"), TaskDialogCommonButtons.Ok);
+                    MessageBox.Show(Language.GetItem(_langItem, "err1"), MessageBoxIcon.Close);
                     return;
                 }
                 var element = configFile.Element("Config");
                 // Проверяем есть ли подгруппа Cui
                 if (element?.Element("CUIRevit") == null)
                 {
-                    //MessageBox.Show(Language.GetItem(_langItem, "err1"), MessageBoxIcon.Close);
-                    // Тут отображение ошибки должно быть в обычном окне, т.к. сборки могли еще не загрузилится
-                    TaskDialog.Show("ModPlus", Language.GetItem(_langItem, "err1"), TaskDialogCommonButtons.Ok);
+                    MessageBox.Show(Language.GetItem(_langItem, "err1"), MessageBoxIcon.Close);
                     return;
                 }
                 var confCuiXel = element.Element("CUIRevit");
