@@ -168,20 +168,15 @@ namespace ModPlus_Revit
                     var isOpen = Process.GetProcesses().Any(t => t.ProcessName == "mpAutoUpdater");
                     if (!isOpen)
                     {
-                        // ReSharper disable once AssignNullToNotNullAttribute
-                        var curDir = new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName;
-                        if (curDir != null)
+                        var fileToStart = Path.Combine(Constants.CurrentDirectory, "mpAutoUpdater.exe");
+                        if (File.Exists(fileToStart))
                         {
-                            var fileToStart = Path.Combine(curDir, "mpAutoUpdater.exe");
-                            if (File.Exists(fileToStart))
-                            {
-                                Process.Start(fileToStart);
-                            }
+                            Process.Start(fileToStart);
                         }
                     }
                 }
             }
-            catch (Exception exception)
+            catch (System.Exception exception)
             {
                 Statistic.SendException(exception);
             }

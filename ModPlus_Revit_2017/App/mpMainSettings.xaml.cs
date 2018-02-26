@@ -108,7 +108,7 @@ namespace ModPlus_Revit.App
             //Theme
             try
             {
-                ThemeManager.ChangeAppStyle(this,
+                ThemeManager.ChangeAppStyle(this.Resources,
                     ThemeManager.Accents.First(
                         x => x.Name.Equals(UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.Settings, "MainSet", "AccentColor"))
                         ),
