@@ -28,6 +28,7 @@ namespace ModPlus_Revit.App
         {
             InitializeComponent();
             Title = ModPlusAPI.Language.GetItem(LangItem, "h1");
+            LoadIcon();
             FillThemesAndColors();
             SetAppRegistryKeyForCurrentUser();
             GetDataFromConfigFile();
@@ -115,7 +116,7 @@ namespace ModPlus_Revit.App
                     ThemeManager.AppThemes.First(
                         x => x.Name.Equals(UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.Settings, "MainSet", "Theme")))
                     );
-
+                ChangeTitleBrush();
             }
             catch
             {
