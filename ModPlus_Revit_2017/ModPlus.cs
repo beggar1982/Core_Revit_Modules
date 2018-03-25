@@ -19,7 +19,7 @@ namespace ModPlus_Revit
             try
             {
                 // inint lang
-                Language.Initialize();
+                if(!Language.Initialize()) return Result.Cancelled;
                 // statistic
                 Statistic.SendPluginStarting("Revit", MpVersionData.CurRevitVers);
                 // Принудительная загрузка сборок
