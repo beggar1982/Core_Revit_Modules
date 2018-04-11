@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.13
+VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModPlus_Revit_2017", "ModPlus_Revit_2017\ModPlus_Revit_2017.csproj", "{2FD2665D-F77B-494B-857C-A265C5AE85D5}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModPlus_Revit_2015", "ModPlus_Revit_2015\ModPlus_Revit_2015.csproj", "{E5C56E8E-C651-4C3B-A43C-903D154F7A0D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModPlus_Revit_2016", "ModPlus_Revit_2016\ModPlus_Revit_2016.csproj", "{7F504393-A52E-433E-AA03-B576EC5F287F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModPlus_Revit_2019", "ModPlus_Revit_2019\ModPlus_Revit_2019.csproj", "{95CEE06B-D127-4EE6-B08A-CA3A75F3EEB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,8 +35,15 @@ Global
 		{7F504393-A52E-433E-AA03-B576EC5F287F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F504393-A52E-433E-AA03-B576EC5F287F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F504393-A52E-433E-AA03-B576EC5F287F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95CEE06B-D127-4EE6-B08A-CA3A75F3EEB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95CEE06B-D127-4EE6-B08A-CA3A75F3EEB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95CEE06B-D127-4EE6-B08A-CA3A75F3EEB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95CEE06B-D127-4EE6-B08A-CA3A75F3EEB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D569A422-4C18-4F97-89D2-02CFA257F0D5}
 	EndGlobalSection
 EndGlobal

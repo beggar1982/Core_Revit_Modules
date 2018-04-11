@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
 [assembly: AssemblyTitle("ModPlus_Revit")]
-[assembly: AssemblyDescription("2017")]
+[assembly: AssemblyDescription("2019")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("modplus.org")]
 [assembly: AssemblyProduct("ModPlus")]
-[assembly: AssemblyCopyright("Copyright ©  ModPlus")]
+[assembly: AssemblyCopyright("Copyright © ModPlus")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Следующий GUID служит для идентификации библиотеки типов, если этот проект будет видимым для COM
-[assembly: Guid("2fd2665d-f77b-494b-857c-a265c5ae85d5")]
+[assembly: Guid("95cee06b-d127-4ee6-b08a-ca3a75f3eeb2")]
 
 // Сведения о версии сборки состоят из следующих четырех значений:
 //
