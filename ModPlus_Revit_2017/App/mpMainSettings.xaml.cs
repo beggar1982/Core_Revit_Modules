@@ -55,13 +55,13 @@ namespace ModPlus_Revit.App
         {
             // create accent color menu items for the demo
             AccentColors = ThemeManager.Accents
-                                            .Select(a => new AccentColorMenuData() { Name = a.Name, ColorBrush = a.Resources["AccentColorBrush"] as Brush })
-                                            .ToList();
+                .Select(a => new AccentColorMenuData() { Name = a.Name, ColorBrush = a.Resources["AccentColorBrush"] as Brush })
+                .ToList();
 
             // create metro theme color menu items for the demo
             AppThemes = ThemeManager.AppThemes
-                                           .Select(a => new AppThemeMenuData() { Name = a.Name, BorderColorBrush = a.Resources["BlackColorBrush"] as Brush, ColorBrush = a.Resources["WhiteColorBrush"] as Brush })
-                                           .ToList();
+                .Select(a => new AppThemeMenuData() { Name = a.Name, BorderColorBrush = a.Resources["BlackColorBrush"] as Brush, ColorBrush = a.Resources["WhiteColorBrush"] as Brush })
+                .ToList();
 
             MiColor.ItemsSource = AccentColors;
             MiTheme.ItemsSource = AppThemes;
@@ -69,13 +69,13 @@ namespace ModPlus_Revit.App
             // Устанавливаем текущие. На всякий случай "без ошибок"
             try
             {
-                _curTheme = UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.Settings, "MainSet", "Theme");
+                _curTheme = Regestry.GetValue("Theme");
                 foreach (var item in MiTheme.Items.Cast<AppThemeMenuData>().Where(item => item.Name.Equals(_curTheme)))
                 {
                     MiTheme.SelectedIndex = MiTheme.Items.IndexOf(item);
                 }
 
-                _curColor = UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.Settings, "MainSet", "AccentColor");
+                _curColor = Regestry.GetValue("AccentColor");
                 foreach (
                     var item in MiColor.Items.Cast<AccentColorMenuData>().Where(item => item.Name.Equals(_curColor)))
                 {
@@ -91,16 +91,16 @@ namespace ModPlus_Revit.App
         private void SetAppRegistryKeyForCurrentUser()
         {
             TbRegistryKey.Text = Variables.RegistryKey;
-            var regVariant = UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.User, "RegestryVariant");
+            var regVariant = Regestry.GetValue("RegestryVariant");
             if (!string.IsNullOrEmpty(regVariant))
             {
                 TbAboutRegKey.Visibility = System.Windows.Visibility.Visible;
                 if (regVariant.Equals("0"))
                     TbAboutRegKey.Text = ModPlusAPI.Language.GetItem(LangItem, "h10") + " " +
-                        UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.User, "HDmodel");
+                        Regestry.GetValue("HDmodel");
                 else if (regVariant.Equals("1"))
                     TbAboutRegKey.Text = ModPlusAPI.Language.GetItem(LangItem, "h11") + " " +
-                        UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.User, "gName");
+                        Regestry.GetValue("gName");
             }
         }
 
@@ -109,12 +109,12 @@ namespace ModPlus_Revit.App
             //Theme
             try
             {
-                ThemeManager.ChangeAppStyle(this.Resources,
+                ThemeManager.ChangeAppStyle(Resources,
                     ThemeManager.Accents.First(
-                        x => x.Name.Equals(UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.Settings, "MainSet", "AccentColor"))
+                        x => x.Name.Equals(Regestry.GetValue("AccentColor"))
                         ),
                     ThemeManager.AppThemes.First(
-                        x => x.Name.Equals(UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.Settings, "MainSet", "Theme")))
+                        x => x.Name.Equals(Regestry.GetValue("Theme")))
                     );
                 ChangeTitleBrush();
             }
@@ -128,12 +128,12 @@ namespace ModPlus_Revit.App
         private void GetDataFromConfigFile()
         {
             // Separator
-            var separator = UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.Settings, "MainSet", "Separator");
+            var separator = Regestry.GetValue("Separator");
             CbSeparatorSettings.SelectedIndex = string.IsNullOrEmpty(separator) ? 0 : int.Parse(separator);
             // Check updates and new
 
             // Виды границ окна
-            var border = UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.Settings, "MainSet", "BordersType");
+            var border = Regestry.GetValue("BordersType");
             foreach (ComboBoxItem item in CbWindowsBorders.Items)
             {
                 if (item.Tag.Equals(border))
@@ -161,19 +161,18 @@ namespace ModPlus_Revit.App
         // Выбор разделителя целой и дробной части для чисел
         private void CbSeparatorSettings_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            UserConfigFile.SetValue(UserConfigFile.ConfigFileZone.Settings, "MainSet", "Separator",
-                ((ComboBox)sender).SelectedIndex.ToString(CultureInfo.InvariantCulture), true);
+            Regestry.SetValue("Separator", ((ComboBox)sender).SelectedIndex.ToString(CultureInfo.InvariantCulture));
         }
         // Выбор темы
         private void MiTheme_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            UserConfigFile.SetValue(UserConfigFile.ConfigFileZone.Settings, "MainSet", "Theme", ((AppThemeMenuData)e.AddedItems[0]).Name, true);
+            Regestry.SetValue("Theme", ((AppThemeMenuData)e.AddedItems[0]).Name);
             ChangeWindowTheme();
         }
         // Выбор цвета
         private void MiColor_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            UserConfigFile.SetValue(UserConfigFile.ConfigFileZone.Settings, "MainSet", "AccentColor", ((AccentColorMenuData)e.AddedItems[0]).Name, true);
+            Regestry.SetValue("AccentColor", ((AccentColorMenuData)e.AddedItems[0]).Name);
             ChangeWindowTheme();
         }
         // windows borders select
@@ -182,7 +181,7 @@ namespace ModPlus_Revit.App
             var cb = sender as ComboBox;
             if (!(cb?.SelectedItem is ComboBoxItem cbi)) return;
             this.ChangeWindowBordes(cbi.Tag.ToString());
-            UserConfigFile.SetValue(UserConfigFile.ConfigFileZone.Settings, "MainSet", "BordersType", cbi.Tag.ToString(), true);
+            Regestry.SetValue("BordersType", cbi.Tag.ToString());
         }
 
         private void MpMainSettings_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -207,16 +206,9 @@ namespace ModPlus_Revit.App
             try
             {
                 // Так как эти значения хранятся в переменных, то их нужно перезаписать
-                UserConfigFile.SetValue(UserConfigFile.ConfigFileZone.Settings, "MainSet", "Separator",
-                    CbSeparatorSettings.SelectedIndex.ToString(CultureInfo.InvariantCulture), true);
+                Regestry.SetValue("Separator", CbSeparatorSettings.SelectedIndex.ToString(CultureInfo.InvariantCulture));
                 // Сохраняем в реестр почту, если изменилась
                 Variables.UserEmail = TbEmailAdress.Text;
-                if (!TbEmailAdress.Text.Equals(_curUserEmail))
-                {
-                    var key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey("ModPlus");
-                    using (key)
-                        key?.SetValue("email", TbEmailAdress.Text);
-                }
                 if (!((Language.LangItem)CbLanguages.SelectedItem).Name.Equals(_curLang))
                 {
                     ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "tt5"));

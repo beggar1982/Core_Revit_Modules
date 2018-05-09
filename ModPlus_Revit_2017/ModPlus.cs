@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Xml.Linq;
 using Autodesk.Revit.UI;
+using Microsoft.Win32;
 using ModPlusAPI;
 using ModPlusAPI.Windows;
 using ModPlus_Revit.Helpers;
@@ -19,7 +18,7 @@ namespace ModPlus_Revit
             try
             {
                 // inint lang
-                if(!Language.Initialize()) return Result.Cancelled;
+                if (!Language.Initialize()) return Result.Cancelled;
                 // statistic
                 Statistic.SendPluginStarting("Revit", MpVersionData.CurRevitVers);
                 // Принудительная загрузка сборок
@@ -30,7 +29,7 @@ namespace ModPlus_Revit
                 App.RibbonBuilder.CreateRibbon(application);
                 // проверка загруженности модуля автообновления
                 CheckAutoUpdaterLoaded();
-                
+
 
                 return Result.Succeeded;
             }
@@ -72,65 +71,43 @@ namespace ModPlus_Revit
         {
             try
             {
-                // Расположение файла конфигурации
-                var confF = UserConfigFile.FullFileName;
-                // Грузим
-                XElement configFile;
-                using (FileStream fs = new FileStream(confF, FileMode.Open, FileAccess.Read, FileShare.None))
-                    configFile = XElement.Load(fs);
-                // Делаем итерацию по значениям в файле конфигурации
-                var xElement = configFile.Element("Config");
-                var el = xElement?.Element("Functions");
-                if (el != null)
+                var funtionsKey = Registry.CurrentUser.OpenSubKey("ModPlus\\Functions");
+                if (funtionsKey == null) return;
+                using (funtionsKey)
                 {
-                    foreach (var conFunc in el.Elements("function"))
+                    foreach (var functionKeyName in funtionsKey.GetSubKeyNames())
                     {
-                        /* Так как после обновления добавится значение 
-                         * ProductFor, то нужно проверять по нем, при наличии
-                         */
-                        var productForAttr = conFunc.Attribute("ProductFor");
-                        if (productForAttr != null)
-                            if (!productForAttr.Value.Equals("Revit"))
-                                continue;
-                        var confFuncNameAttr = conFunc.Attribute("Name");
-                        if (confFuncNameAttr != null)
+                        var functionKey = funtionsKey.OpenSubKey(functionKeyName);
+                        if (functionKey == null) continue;
+                        foreach (var availPrVersKeyName in functionKey.GetSubKeyNames())
                         {
-                            /* Так как значение AvailCad будет являться устаревшим, НО
-                            * пока не будет удалено, делаем двойной вариант проверки
-                            */
-                            var conFuncAvailCad = string.Empty;
-                            var availProductExternalVersionAttr = conFunc.Attribute("AvailProductExternalVersion");
-                            if (availProductExternalVersionAttr != null)
-                                conFuncAvailCad = availProductExternalVersionAttr.Value;
-                            if (!string.IsNullOrEmpty(conFuncAvailCad))
+                            // Если версия продукта не совпадает, то пропускаю
+                            if (!availPrVersKeyName.Equals(MpVersionData.CurRevitVers)) continue;
+                            var availPrVersKey = functionKey.OpenSubKey(availPrVersKeyName);
+                            if (availPrVersKey == null) continue;
+                            // беру свойства функции из реестра
+                            var file = availPrVersKey.GetValue("File") as string;
+                            var onOff = availPrVersKey.GetValue("OnOff") as string;
+                            var productFor = availPrVersKey.GetValue("ProductFor") as string;
+                            if (string.IsNullOrEmpty(onOff) || string.IsNullOrEmpty(productFor)) continue;
+                            if (!productFor.Equals("Revit")) continue;
+                            var isOn = !bool.TryParse(onOff, out var b) || b; // default - true
+                            // Если "Продукт для" подходит, файл существует и функция включена - гружу
+                            if (isOn)
                             {
-                                // Проверяем по версии автокада
-                                if (conFuncAvailCad.Equals(MpVersionData.CurRevitVers))
+                                if (!string.IsNullOrEmpty(file) && File.Exists(file))
                                 {
-                                    // Добавляем если только функция включена и есть физически на диске!!!
-                                    var conFuncOnOff = bool.TryParse(conFunc.Attribute("OnOff")?.Value, out bool b) && b; // false
-                                    var conFuncFileAttr = conFunc.Attribute("File");
-                                    // Т.к. атрибута File может не быть
-                                    if (conFuncOnOff)
+                                    // load
+                                    var localFuncAssembly = Assembly.LoadFrom(file);
+                                    LoadFunctionsHelper.GetDataFromFunctionIntrface(localFuncAssembly, file);
+                                }
+                                else
+                                {
+                                    var findedFile = LoadFunctionsHelper.FindFile(functionKeyName);
+                                    if (!string.IsNullOrEmpty(findedFile) && File.Exists(findedFile))
                                     {
-                                        if (conFuncFileAttr != null)
-                                        {
-                                            if (File.Exists(conFuncFileAttr.Value))
-                                            {
-                                                var localFuncAssembly = Assembly.LoadFrom(conFuncFileAttr.Value);
-                                                LoadFunctionsHelper.GetDataFromFunctionIntrface(localFuncAssembly, conFuncFileAttr.Value);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            var findedFile = LoadFunctionsHelper.FindFile(confFuncNameAttr.Value);
-                                            if (!string.IsNullOrEmpty(findedFile))
-                                                if (File.Exists(findedFile))
-                                                {
-                                                    var localFuncAssembly = Assembly.LoadFrom(findedFile);
-                                                    LoadFunctionsHelper.GetDataFromFunctionIntrface(localFuncAssembly, findedFile);
-                                                }
-                                        }
+                                        var localFuncAssembly = Assembly.LoadFrom(findedFile);
+                                        LoadFunctionsHelper.GetDataFromFunctionIntrface(localFuncAssembly, findedFile);
                                     }
                                 }
                             }
@@ -141,18 +118,6 @@ namespace ModPlus_Revit
             catch (Exception exception)
             {
                 ExceptionBox.Show(exception);
-            }
-        }
-        public static IEnumerable<Type> GetLoadableTypes(Assembly assembly)
-        {
-            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
-            try
-            {
-                return assembly.GetTypes();
-            }
-            catch (ReflectionTypeLoadException e)
-            {
-                return e.Types.Where(t => t != null);
             }
         }
         /// <summary>Проверка загруженности модуля автообновления</summary>
@@ -176,7 +141,7 @@ namespace ModPlus_Revit
                     }
                 }
             }
-            catch (System.Exception exception)
+            catch (Exception exception)
             {
                 Statistic.SendException(exception);
             }

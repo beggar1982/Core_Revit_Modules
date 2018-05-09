@@ -38,34 +38,17 @@ namespace ModPlus_Revit.App
         {
             try
             {
-                // Расположение файла конфигурации
-                var confF = UserConfigFile.FullFileName;
-                // Грузим
-                XElement configFile;
-                using (FileStream fs = new FileStream(confF, FileMode.Open, FileAccess.Read, FileShare.None))
-                    configFile = XElement.Load(fs);
-                // Проверяем есть ли группа Config
-                if (configFile.Element("Config") == null)
-                {
-                    MessageBox.Show(Language.GetItem(_langItem, "err1"), MessageBoxIcon.Close);
-                    return;
-                }
-                var element = configFile.Element("Config");
-                // Проверяем есть ли подгруппа Cui
-                if (element?.Element("CUIRevit") == null)
-                {
-                    MessageBox.Show(Language.GetItem(_langItem, "err1"), MessageBoxIcon.Close);
-                    return;
-                }
-                var confCuiXel = element.Element("CUIRevit");
+                var confCuiXel = ModPlusAPI.RegistryData.Adaptation.GetCuiAsXElement("Revit");
                 // Проходим по группам
                 if (confCuiXel != null)
                     foreach (var group in confCuiXel.Elements("Group"))
                     {
+                        var groupNameAttr = group.Attribute("GroupName");
+                        if(groupNameAttr == null) continue;
                         // create the panel
                         RibbonPanel panel = application.CreateRibbonPanel(
                             _tabName,
-                            Language.TryGetCuiLocalGroupName(group.Attribute("GroupName")?.Value));
+                            Language.TryGetCuiLocalGroupName(groupNameAttr.Value));
 
                         // Проходим по функциям группы
                         foreach (var item in group.Elements())
