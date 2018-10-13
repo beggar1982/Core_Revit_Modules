@@ -1,15 +1,13 @@
-﻿<mpc:BaseMetroWindow x:Class="ModPlus_Revit.App.MpMainSettings"
+﻿<mps:ModPlusWindow x:Class="ModPlus_Revit.App.MpMainSettings"
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                      xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-                      xmlns:mpc="clr-namespace:ModPlusAPI.Windows.Mpc;assembly=ModPlusAPI"
+                      xmlns:mps="https://modplus.org/winfx/xaml/controls"
                       SizeToContent="WidthAndHeight"
                       ResizeMode="NoResize">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!-- For IntelliSense -->
-                <ResourceDictionary Source="pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Styles.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/ModPlusStyle;component/Styles/Controls.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
             <XmlDataProvider x:Key="Lang" Source="E:/ModPlus/Languages/en-US.xml" XPath="ModPlus/RevitDlls"></XmlDataProvider>
         </ResourceDictionary>
@@ -20,75 +18,39 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <GroupBox Header="{Binding Source={StaticResource Lang}, XPath=h2}" Grid.Row="0" Margin="2">
+        <GroupBox Header="{Binding Source={StaticResource Lang}, XPath=h2}" Grid.Row="0" >
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
-                <!-- Language -->
-                <StackPanel Grid.Row="0" Orientation="Horizontal" Visibility="Collapsed">
-                    <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=h5}"
-                               MinWidth="120"
-                               VerticalAlignment="Center" Margin="2"></TextBlock>
-                    <ComboBox Name="CbLanguages" Margin="2">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=DisplayName}"></TextBlock>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                </StackPanel>
                 <!--Theme-->
-                <StackPanel Orientation="Horizontal" Grid.Row="1">
+                <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=h6}"
-                               VerticalAlignment="Center" Margin="2" MinWidth="120"></TextBlock>
-                    <ComboBox ItemsSource="{Binding}" Name="MiTheme" Width="120" Margin="2"
+                               VerticalAlignment="Center" MinWidth="120"></TextBlock>
+                    <ComboBox ItemsSource="{Binding}" Name="MiTheme" 
                               SelectionChanged="MiTheme_OnSelectionChanged">
                         <ComboBox.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate DataType="mps:Theme">
                                 <StackPanel Orientation="Horizontal">
-                                    <Ellipse Width="16" Height="16" StrokeThickness="1" Margin="2"
-                                             Stroke="{Binding BorderColorBrush, Mode=OneWay}"
-                                             Fill="{Binding ColorBrush, Mode=OneWay}" />
-                                    <TextBlock Text="{Binding Name}" Margin="2" VerticalAlignment="Center"></TextBlock>
+                                    <Border CornerRadius="4" Width="40" Height="30"
+                                            Background="{Binding Path=ShowCaseBackgroundBrush}">
+                                        <Ellipse HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                 Width="20" Height="20"
+                                                 Fill="{Binding Path=ShowcaseBrush}"></Ellipse>
+                                    </Border>
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding Path=DisplayName}" Margin="10 0"></TextBlock>
                                 </StackPanel>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
-                    </ComboBox>
-                    <ComboBox ItemsSource="{Binding}" Name="MiColor" Width="120" Margin="2"
-                              SelectionChanged="MiColor_OnSelectionChanged">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <Ellipse Width="16" Height="16" StrokeThickness="1" Margin="2"
-                                             Stroke="{Binding BorderColorBrush, Mode=OneWay}"
-                                             Fill="{Binding ColorBrush, Mode=OneWay}" />
-                                    <TextBlock Text="{Binding Name}" Margin="2" VerticalAlignment="Center"></TextBlock>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Grid.Row="2">
-                    <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=h7}" 
-                               VerticalAlignment="Center" Margin="2" MinWidth="120"></TextBlock>
-                    <ComboBox Name="CbWindowsBorders" Margin="2" Width="244" SelectionChanged="CbWindowsBorders_OnSelectionChanged">
-                        <ComboBoxItem Tag="AccentBorder" Content="{Binding Source={StaticResource Lang}, XPath=border1}"></ComboBoxItem>
-                        <ComboBoxItem Tag="AccentGlowBrush" Content="{Binding Source={StaticResource Lang}, XPath=border2}"></ComboBoxItem>
-                        <ComboBoxItem Tag="AccentBorderGlowBrush" Content="{Binding Source={StaticResource Lang}, XPath=border3}"></ComboBoxItem>
-                        <ComboBoxItem Tag="Shadow" Content="{Binding Source={StaticResource Lang}, XPath=border4}"></ComboBoxItem>
-                        <ComboBoxItem Tag="NoBorder" Content="{Binding Source={StaticResource Lang}, XPath=border5}"></ComboBoxItem>
                     </ComboBox>
                 </StackPanel>
                 <!--Separator-->
-                <StackPanel Grid.Row="3" Orientation="Horizontal"
+                <StackPanel Grid.Row="1" Orientation="Horizontal"
                             ToolTip="{Binding Source={StaticResource Lang}, XPath=tt1}">
                     <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=h8}"
-                               Margin="2" MinWidth="120" VerticalAlignment="Center"></TextBlock>
-                    <ComboBox VerticalAlignment="Center" Margin="2" Name="CbSeparatorSettings"
+                                MinWidth="120" VerticalAlignment="Center"></TextBlock>
+                    <ComboBox VerticalAlignment="Center"  Name="CbSeparatorSettings"
                               SelectionChanged="CbSeparatorSettings_OnSelectionChanged">
                         <ComboBoxItem Content="."></ComboBoxItem>
                         <ComboBoxItem Content=","></ComboBoxItem>
@@ -96,56 +58,27 @@
                 </StackPanel>
             </Grid>
         </GroupBox>
-        <GroupBox Header="{Binding Source={StaticResource Lang}, XPath=h3}" Grid.Row="1" Margin="2">
-            <GroupBox.Resources>
-                <Canvas x:Key="AppbarQuestion" Width="76" Height="76" Clip="F1 M 0,0L 76,0L 76,76L 0,76L 0,0">
-                    <Path Width="25.3333" Height="39.5833" Canvas.Left="25.3333" Canvas.Top="17.4167" Stretch="Fill"
-                          Fill="Black" Data="F1 M 37.2083,49.0833C 39.3945,49.0833 41.1667,50.8555 41.1667,53.0417C 41.1667,55.2278 39.3945,57 37.2083,57C 35.0222,57 33.25,55.2278 33.25,53.0417C 33.25,50.8555 35.0222,49.0833 37.2083,49.0833 Z M 38,17.4167C 44.9956,17.4167 50.6666,21.9416 50.6666,28.5C 50.6666,30.875 49.0833,34.8333 45.9167,36.4167C 42.75,38 41.1667,40.1267 41.1667,42.75L 41.1667,45.9167L 33.25,45.9167L 33.25,43.5417C 33.25,38.1571 38,34.8333 39.5833,33.25C 42.75,30.0833 42.75,29.644 42.75,28.5C 42.75,25.8767 40.6233,23.75 38,23.75C 35.3766,23.75 33.25,25.8767 33.25,28.5L 33.25,30.875L 25.3333,30.875L 25.3333,29.2917C 25.3333,22.7333 31.0044,17.4167 38,17.4167 Z "/>
-                </Canvas>
-            </GroupBox.Resources>
+        <GroupBox Header="{Binding Source={StaticResource Lang}, XPath=h3}" Grid.Row="1" >
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="e-mail:" Margin="2" VerticalAlignment="Center"></TextBlock>
-                <TextBox Margin="2" VerticalAlignment="Center" Name="TbEmailAdress"
+                <TextBlock Text="e-mail:"  VerticalAlignment="Center"></TextBlock>
+                <TextBox  VerticalAlignment="Center" Name="TbEmailAdress"
                          Width="200" LostFocus="TbEmailAdress_OnLostFocus"
-                         mah:TextBoxHelper.ClearTextButton="True"
-                         mah:TextBoxHelper.Watermark="login@domain.com"></TextBox>
-                <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="20" Height="18">
-                    <Rectangle.OpacityMask>
-                        <VisualBrush Stretch="Uniform" Visual="{StaticResource AppbarQuestion}"></VisualBrush>
-                    </Rectangle.OpacityMask>
-                    <Rectangle.Triggers>
-                        <EventTrigger RoutedEvent="Rectangle.MouseEnter">
-                            <BeginStoryboard>
-                                <Storyboard TargetName="PopupAboutEmail" TargetProperty="IsOpen">
-                                    <BooleanAnimationUsingKeyFrames FillBehavior="HoldEnd">
-                                        <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="True"></DiscreteBooleanKeyFrame>
-                                    </BooleanAnimationUsingKeyFrames>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                        <EventTrigger RoutedEvent="Rectangle.MouseLeave">
-                            <BeginStoryboard>
-                                <Storyboard TargetName="PopupAboutEmail" TargetProperty="IsOpen">
-                                    <BooleanAnimationUsingKeyFrames FillBehavior="HoldEnd">
-                                        <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="False"></DiscreteBooleanKeyFrame>
-                                    </BooleanAnimationUsingKeyFrames>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </Rectangle.Triggers>
-                </Rectangle>
-                <Popup Name="PopupAboutEmail" Placement="Mouse"
-                       PopupAnimation="Fade" AllowsTransparency="True">
-                    <Border BorderThickness="1" BorderBrush="{DynamicResource AccentColorBrush}"
-                            Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
-                        <TextBlock Margin="10" MaxWidth="400" TextWrapping="Wrap" FontSize="14"
-                                   Text="{Binding Source={StaticResource Lang}, XPath=tt2}">
-                        </TextBlock>
-                    </Border>
-                </Popup>
+                         mps:TextFieldAssist.ClearTextButton="True"
+                         mps:HintAssist.Hint="login@domain.com"></TextBox>
+                <Button VerticalAlignment="Center"
+                        Style="{DynamicResource ModPlusFlatButton}" MinWidth="0" Padding="4"
+                        ToolTipService.InitialShowDelay="0" Foreground="{DynamicResource AccentColorBrush}"
+                        ToolTip="{Binding Source={StaticResource Lang}, XPath=tt2}">
+                    <Viewbox Width="18" Height="18">
+                        <Canvas Width="24" Height="24">
+                            <Path Data="M10,19H13V22H10V19M12,2C17.35,2.22 19.68,7.62 16.5,11.67C15.67,12.67 14.33,13.33 13.67,14.17C13,15 13,16 13,17H10C10,15.33 10,13.92 10.67,12.92C11.33,11.92 12.67,11.33 13.5,10.67C15.92,8.43 15.32,5.26 12,5A3,3 0 0,0 9,8H6A6,6 0 0,1 12,2Z" 
+                                  Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Foreground}" />
+                        </Canvas>
+                    </Viewbox>
+                </Button>
             </StackPanel>
         </GroupBox>
-        <GroupBox Header="{Binding Source={StaticResource Lang}, XPath=h4}" Grid.Row="2" Margin="2">
+        <GroupBox Header="{Binding Source={StaticResource Lang}, XPath=h4}" Grid.Row="2" >
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
@@ -158,17 +91,14 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=h9}"
                            Grid.Column="0" Grid.Row="0"
-                           Margin="2" VerticalAlignment="Center"></TextBlock>
+                            VerticalAlignment="Center"></TextBlock>
                 <TextBox Grid.Column="1" Grid.Row="0" 
-                         mah:TextBoxHelper.SelectAllOnFocus="True"
-                         mah:TextBoxHelper.Watermark="{Binding Source={StaticResource Lang}, XPath=tt3}"
+                         mps:TextFieldAssist.ClearTextButton="True"
+                         mps:HintAssist.Hint="{Binding Source={StaticResource Lang}, XPath=tt3}"
                          MinWidth="200" Name="TbRegistryKey" IsReadOnly="True"></TextBox>
-                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="2" VerticalAlignment="Center"
+                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"  VerticalAlignment="Center"
                            Name="TbAboutRegKey"></TextBlock>
             </Grid>
         </GroupBox>
     </Grid>
-</mpc:BaseMetroWindow>
-
-
-
+</mps:ModPlusWindow>

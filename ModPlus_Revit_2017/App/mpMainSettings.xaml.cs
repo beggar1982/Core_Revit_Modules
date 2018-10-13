@@ -1,91 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using Autodesk.Revit.DB;
-using MahApps.Metro;
-using ModPlusAPI;
-using ModPlusAPI.Windows;
-using ModPlusAPI.Windows.Helpers;
-
-namespace ModPlus_Revit.App
+﻿namespace ModPlus_Revit.App
 {
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
+    using System.Linq;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Media;
+    using Autodesk.Revit.DB;
+    using ModPlusAPI;
+    using ModPlusAPI.Windows;
+
     public partial class MpMainSettings
     {
-        private string _curUserEmail = string.Empty;
-        private string _curTheme = string.Empty;
-        private string _curColor = string.Empty;
-        private readonly string _curLang;
-        public List<AccentColorMenuData> AccentColors { get; set; }
-        public List<AppThemeMenuData> AppThemes { get; set; }
         private const string LangItem = "RevitDlls";
 
         public MpMainSettings()
         {
             InitializeComponent();
             Title = ModPlusAPI.Language.GetItem(LangItem, "h1");
-            LoadIcon();
             FillThemesAndColors();
             SetAppRegistryKeyForCurrentUser();
             GetDataFromConfigFile();
             GetDataByVars();
             Closing += MpMainSettings_Closing;
             Closed += MpMainSettings_OnClosed;
-            // fill languages
-            CbLanguages.ItemsSource = ModPlusAPI.Language.GetLanguagesByFiles();
-            CbLanguages.SelectedItem = ((List<Language.LangItem>)CbLanguages.ItemsSource)
-                .FirstOrDefault(x => x.Name.Equals(ModPlusAPI.Language.CurrentLanguageName));
-            _curLang = ((Language.LangItem)CbLanguages.SelectedItem)?.Name;
-            CbLanguages.SelectionChanged += CbLanguages_SelectionChanged;
         }
-        // Change language
-        private void CbLanguages_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (sender is ComboBox cb && cb.SelectedItem is Language.LangItem langItem)
-            {
-                ModPlusAPI.Language.SetCurrentLanguage(langItem);
-                ModPlusAPI.Language.SetLanguageProviderForWindow(this);
-            }
-        }
+
         private void FillThemesAndColors()
         {
-            // create accent color menu items for the demo
-            AccentColors = ThemeManager.Accents
-                .Select(a => new AccentColorMenuData() { Name = a.Name, ColorBrush = a.Resources["AccentColorBrush"] as Brush })
-                .ToList();
-
-            // create metro theme color menu items for the demo
-            AppThemes = ThemeManager.AppThemes
-                .Select(a => new AppThemeMenuData() { Name = a.Name, BorderColorBrush = a.Resources["BlackColorBrush"] as Brush, ColorBrush = a.Resources["WhiteColorBrush"] as Brush })
-                .ToList();
-
-            MiColor.ItemsSource = AccentColors;
-            MiTheme.ItemsSource = AppThemes;
-
-            // Устанавливаем текущие. На всякий случай "без ошибок"
-            try
+            MiTheme.ItemsSource = ModPlusStyle.ThemeManager.Themes;
+            var pluginStyle = ModPlusStyle.ThemeManager.Themes.First();
+            var savedPluginStyleName = Regestry.GetValue("PluginStyle");
+            if (!string.IsNullOrEmpty(savedPluginStyleName))
             {
-                _curTheme = Regestry.GetValue("Theme");
-                foreach (var item in MiTheme.Items.Cast<AppThemeMenuData>().Where(item => item.Name.Equals(_curTheme)))
-                {
-                    MiTheme.SelectedIndex = MiTheme.Items.IndexOf(item);
-                }
+                var theme = ModPlusStyle.ThemeManager.Themes.Single(t => t.Name == savedPluginStyleName);
+                if (theme != null)
+                    pluginStyle = theme;
+            }
 
-                _curColor = Regestry.GetValue("AccentColor");
-                foreach (
-                    var item in MiColor.Items.Cast<AccentColorMenuData>().Where(item => item.Name.Equals(_curColor)))
-                {
-                    MiColor.SelectedIndex = MiColor.Items.IndexOf(item);
-                }
-            }
-            catch
-            {
-                //ignored
-            }
+            MiTheme.SelectedItem = pluginStyle;
         }
         // Заполнение поля Ключ продукта
         private void SetAppRegistryKeyForCurrentUser()
@@ -104,25 +58,6 @@ namespace ModPlus_Revit.App
             }
         }
 
-        private void ChangeWindowTheme()
-        {
-            //Theme
-            try
-            {
-                ThemeManager.ChangeAppStyle(Resources,
-                    ThemeManager.Accents.First(
-                        x => x.Name.Equals(Regestry.GetValue("AccentColor"))
-                        ),
-                    ThemeManager.AppThemes.First(
-                        x => x.Name.Equals(Regestry.GetValue("Theme")))
-                    );
-                ChangeTitleBrush();
-            }
-            catch
-            {
-                //ignored
-            }
-        }
         // Загрузка данных из файла конфигурации
         // которые требуется отобразить в окне
         private void GetDataFromConfigFile()
@@ -130,18 +65,6 @@ namespace ModPlus_Revit.App
             // Separator
             var separator = Regestry.GetValue("Separator");
             CbSeparatorSettings.SelectedIndex = string.IsNullOrEmpty(separator) ? 0 : int.Parse(separator);
-            // Check updates and new
-
-            // Виды границ окна
-            var border = Regestry.GetValue("BordersType");
-            foreach (ComboBoxItem item in CbWindowsBorders.Items)
-            {
-                if (item.Tag.Equals(border))
-                {
-                    CbWindowsBorders.SelectedItem = item; break;
-                }
-            }
-            if (CbWindowsBorders.SelectedIndex == -1) CbWindowsBorders.SelectedIndex = 3;
         }
         /// <summary>
         /// Получение значений из глобальных переменных плагина
@@ -151,7 +74,7 @@ namespace ModPlus_Revit.App
             try
             {
                 // email
-                TbEmailAdress.Text = _curUserEmail = Variables.UserEmail;
+                TbEmailAdress.Text = Variables.UserEmail;
             }
             catch (Exception exception)
             {
@@ -166,30 +89,17 @@ namespace ModPlus_Revit.App
         // Выбор темы
         private void MiTheme_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Regestry.SetValue("Theme", ((AppThemeMenuData)e.AddedItems[0]).Name);
-            ChangeWindowTheme();
+            var theme = (ModPlusStyle.Theme)e.AddedItems[0];
+            Regestry.SetValue("PluginStyle", theme.Name);
+            ModPlusStyle.ThemeManager.ChangeTheme(this, theme);
         }
-        // Выбор цвета
-        private void MiColor_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            Regestry.SetValue("AccentColor", ((AccentColorMenuData)e.AddedItems[0]).Name);
-            ChangeWindowTheme();
-        }
-        // windows borders select
-        private void CbWindowsBorders_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var cb = sender as ComboBox;
-            if (!(cb?.SelectedItem is ComboBoxItem cbi)) return;
-            this.ChangeWindowBordes(cbi.Tag.ToString());
-            Regestry.SetValue("BordersType", cbi.Tag.ToString());
-        }
-
+        
         private void MpMainSettings_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (!string.IsNullOrEmpty(TbEmailAdress.Text))
             {
                 if (IsValidEmail(TbEmailAdress.Text))
-                    TbEmailAdress.BorderBrush = FindResource("TextBoxBorderBrush") as Brush;
+                    TbEmailAdress.BorderBrush = FindResource("BlackBrush") as Brush;
                 else
                 {
                     TbEmailAdress.BorderBrush = Brushes.Red;
@@ -209,10 +119,6 @@ namespace ModPlus_Revit.App
                 Regestry.SetValue("Separator", CbSeparatorSettings.SelectedIndex.ToString(CultureInfo.InvariantCulture));
                 // Сохраняем в реестр почту, если изменилась
                 Variables.UserEmail = TbEmailAdress.Text;
-                if (!((Language.LangItem)CbLanguages.SelectedItem).Name.Equals(_curLang))
-                {
-                    ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "tt5"));
-                }
             }
             catch (Exception ex)
             {
@@ -225,7 +131,7 @@ namespace ModPlus_Revit.App
             if (sender is TextBox tb)
             {
                 if (IsValidEmail(tb.Text))
-                    tb.BorderBrush = FindResource("TextBoxBorderBrush") as Brush;
+                    tb.BorderBrush = FindResource("BlackBrush") as Brush;
                 else tb.BorderBrush = Brushes.Red;
             }
         }
@@ -242,17 +148,6 @@ namespace ModPlus_Revit.App
                 return false;
             }
         }
-    }
-
-    public class AccentColorMenuData
-    {
-        public string Name { get; set; }
-        public Brush BorderColorBrush { get; set; }
-        public Brush ColorBrush { get; set; }
-
-    }
-    public class AppThemeMenuData : AccentColorMenuData
-    {
     }
 
     [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
