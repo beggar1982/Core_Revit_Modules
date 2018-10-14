@@ -11,6 +11,9 @@ using ModPlus_Revit.Helpers;
 
 namespace ModPlus_Revit
 {
+    using System.Net;
+    using System.Xml.Linq;
+
     public class ModPlus : IExternalApplication
     {
         public Result OnStartup(UIControlledApplication application)
@@ -25,6 +28,9 @@ namespace ModPlus_Revit
                 LoadAssms();
                 UserConfigFile.InitConfigFile();
                 LoadFunctions();
+                // check adaptation
+                CheckAdaptation();
+
                 // Load ribbon
                 App.RibbonBuilder.CreateRibbon(application);
                 // проверка загруженности модуля автообновления
@@ -46,6 +52,7 @@ namespace ModPlus_Revit
         {
             return Result.Succeeded;
         }
+        
         // Принудительная загрузка сборок
         // необходимых для работы
         private static void LoadAssms()
@@ -66,6 +73,7 @@ namespace ModPlus_Revit
                 ExceptionBox.Show(exception);
             }
         }
+        
         // Загрузка функций
         private static void LoadFunctions()
         {
@@ -120,6 +128,7 @@ namespace ModPlus_Revit
                 ExceptionBox.Show(exception);
             }
         }
+        
         /// <summary>Проверка загруженности модуля автообновления</summary>
         private static void CheckAutoUpdaterLoaded()
         {
@@ -144,6 +153,45 @@ namespace ModPlus_Revit
             catch (Exception exception)
             {
                 Statistic.SendException(exception);
+            }
+        }
+
+        private static void CheckAdaptation()
+        {
+            var confCuiXel = ModPlusAPI.RegistryData.Adaptation.GetCuiAsXElement("Revit");
+
+            // Проходим по группам
+            if (confCuiXel == null || confCuiXel.IsEmpty)
+            {
+                if (ModPlusAPI.Web.Connection.CheckForInternetConnection())
+                {
+                    // Грузим файл
+                    try
+                    {
+                        var url = "http://www.modplus.org/Downloads/StandardCUIRevit.xml";
+                        if (string.IsNullOrEmpty(url))
+                            return;
+                        string xmlStr;
+                        using (var wc = new WebClientWithTimeout { Proxy = ModPlusAPI.Web.Proxy.GetWebProxy() })
+                            xmlStr = wc.DownloadString(url);
+                        var xmlDocument = XElement.Parse(xmlStr);
+
+                        ModPlusAPI.RegistryData.Adaptation.SaveCuiFromXElement("Revit", xmlDocument);
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+        }
+
+        internal class WebClientWithTimeout : WebClient
+        {
+            protected override WebRequest GetWebRequest(Uri uri)
+            {
+                WebRequest w = base.GetWebRequest(uri);
+                w.Timeout = 3000;
+                return w;
             }
         }
     }
