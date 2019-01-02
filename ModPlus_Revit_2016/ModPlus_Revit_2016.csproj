@@ -62,6 +62,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\ModPlus_Revit_2015\Properties\AssemblyInfoCommon.cs">
+      <Link>Properties\AssemblyInfoCommon.cs</Link>
+    </Compile>
     <Compile Include="..\ModPlus_Revit_2017\App\mpMainSettings.xaml.cs">
       <Link>App\mpMainSettings.xaml.cs</Link>
       <DependentUpon>mpMainSettings.xaml</DependentUpon>

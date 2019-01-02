@@ -13,6 +13,7 @@ namespace ModPlus_Revit
 {
     using System.Net;
     using System.Xml.Linq;
+    using ModPlusAPI.LicenseServer;
 
     public class ModPlus : IExternalApplication
     {
@@ -25,7 +26,7 @@ namespace ModPlus_Revit
                 // statistic
                 Statistic.SendPluginStarting("Revit", MpVersionData.CurRevitVers);
                 // Принудительная загрузка сборок
-                LoadAssms();
+                LoadAssemblies();
                 UserConfigFile.InitConfigFile();
                 LoadFunctions();
                 // check adaptation
@@ -36,6 +37,8 @@ namespace ModPlus_Revit
                 // проверка загруженности модуля автообновления
                 CheckAutoUpdaterLoaded();
 
+                // license server client
+                ClientStarter.StartConnection(ProductLicenseType.Revit);
 
                 return Result.Succeeded;
             }
@@ -50,12 +53,13 @@ namespace ModPlus_Revit
 
         public Result OnShutdown(UIControlledApplication application)
         {
+            ClientStarter.StopConnection();
             return Result.Succeeded;
         }
         
         // Принудительная загрузка сборок
         // необходимых для работы
-        private static void LoadAssms()
+        private static void LoadAssemblies()
         {
             try
             {

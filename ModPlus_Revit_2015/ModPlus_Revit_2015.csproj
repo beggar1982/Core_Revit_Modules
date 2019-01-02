@@ -76,6 +76,7 @@
     <Compile Include="..\ModPlus_Revit_2017\ModPlus.cs">
       <Link>ModPlus.cs</Link>
     </Compile>
+    <Compile Include="Properties\AssemblyInfoCommon.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
