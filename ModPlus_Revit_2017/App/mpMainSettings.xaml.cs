@@ -9,7 +9,9 @@
     using System.Windows.Media;
     using Autodesk.Revit.DB;
     using ModPlusAPI;
+    using ModPlusAPI.LicenseServer;
     using ModPlusAPI.Windows;
+    using ModPlusStyle.Controls.Dialogs;
 
     public partial class MpMainSettings
     {
@@ -19,12 +21,43 @@
         {
             InitializeComponent();
             Title = ModPlusAPI.Language.GetItem(LangItem, "h1");
+            SetLanguageValues();
             FillThemesAndColors();
             SetAppRegistryKeyForCurrentUser();
-            GetDataFromConfigFile();
+            LoadSettingsFromConfigFileAndRegistry();
             GetDataByVars();
             Closing += MpMainSettings_Closing;
             Closed += MpMainSettings_OnClosed;
+
+            // license server
+            if (ClientStarter.IsClientWorking())
+            {
+                BtStopConnectionToLicenseServer.IsEnabled = true;
+                BtRestoreConnectionToLicenseServer.IsEnabled = false;
+                TbLocalLicenseServerIpAddress.IsEnabled = false;
+                TbLocalLicenseServerPort.IsEnabled = false;
+            }
+            else
+            {
+                BtStopConnectionToLicenseServer.IsEnabled = false;
+                BtRestoreConnectionToLicenseServer.IsEnabled = true;
+                TbLocalLicenseServerIpAddress.IsEnabled = true;
+                TbLocalLicenseServerPort.IsEnabled = true;
+            }
+        }
+
+        private void SetLanguageValues()
+        {
+            // Так как элементы окна по Серверу лицензий ссылаются на узел ModPlusAPI
+            // присваиваю им значения в коде, после установки языка
+            var li = "ModPlusAPI";
+            GroupBoxLicenseServer.Header = ModPlusAPI.Language.GetItem(li, "h16");
+            TbLocalLicenseServerIpAddressHeader.Text = ModPlusAPI.Language.GetItem(li, "h17");
+            TbLocalLicenseServerPortHeader.Text = ModPlusAPI.Language.GetItem(li, "h18");
+            BtCheckLocalLicenseServerConnection.Content = ModPlusAPI.Language.GetItem(li, "h19");
+            BtStopConnectionToLicenseServer.Content = ModPlusAPI.Language.GetItem(li, "h23");
+            BtRestoreConnectionToLicenseServer.Content = ModPlusAPI.Language.GetItem(li, "h24");
+            ChkDisableConnectionWithLicenseServer.Content = ModPlusAPI.Language.GetItem(li, "h25");
         }
 
         private void FillThemesAndColors()
@@ -41,6 +74,7 @@
 
             MiTheme.SelectedItem = pluginStyle;
         }
+        
         // Заполнение поля Ключ продукта
         private void SetAppRegistryKeyForCurrentUser()
         {
@@ -60,11 +94,15 @@
 
         // Загрузка данных из файла конфигурации
         // которые требуется отобразить в окне
-        private void GetDataFromConfigFile()
+        private void LoadSettingsFromConfigFileAndRegistry()
         {
             // Separator
             var separator = Regestry.GetValue("Separator");
             CbSeparatorSettings.SelectedIndex = string.IsNullOrEmpty(separator) ? 0 : int.Parse(separator);
+            ChkDisableConnectionWithLicenseServer.IsChecked =
+                bool.TryParse(UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.Settings, "DisableConnectionWithLicenseServerInRevit"), out var b) && b; // false
+            TbLocalLicenseServerIpAddress.Text = Regestry.GetValue("LocalLicenseServerIpAddress");
+            TbLocalLicenseServerPort.Value = int.TryParse(Regestry.GetValue("LocalLicenseServerPort"), out var i) ? i : 0;
         }
         /// <summary>
         /// Получение значений из глобальных переменных плагина
@@ -119,6 +157,19 @@
                 Regestry.SetValue("Separator", CbSeparatorSettings.SelectedIndex.ToString(CultureInfo.InvariantCulture));
                 // Сохраняем в реестр почту, если изменилась
                 Variables.UserEmail = TbEmailAdress.Text;
+
+                // License server
+                UserConfigFile.SetValue(UserConfigFile.ConfigFileZone.Settings, "DisableConnectionWithLicenseServerInRevit",
+                    ChkDisableConnectionWithLicenseServer.IsChecked.Value.ToString(), true);
+                Regestry.SetValue("LocalLicenseServerIpAddress", TbLocalLicenseServerIpAddress.Text);
+                Regestry.SetValue("LocalLicenseServerPort", TbLocalLicenseServerPort.Value.ToString());
+
+                if (_restartClientOnClose)
+                {
+                    // reload server
+                    ClientStarter.StopConnection();
+                    ClientStarter.StartConnection(ProductLicenseType.Revit);
+                }
             }
             catch (Exception ex)
             {
@@ -147,6 +198,38 @@
             {
                 return false;
             }
+        }
+
+        private async void BtCheckLocalLicenseServerConnection_OnClick(object sender, RoutedEventArgs e)
+        {
+            await this.ShowMessageAsync(
+                ClientStarter.IsLicenseServerAvailable()
+                    ? ModPlusAPI.Language.GetItem("ModPlusAPI", "h21")
+                    : ModPlusAPI.Language.GetItem("ModPlusAPI", "h20"),
+                ModPlusAPI.Language.GetItem("ModPlusAPI", "h22") + " " +
+                TbLocalLicenseServerIpAddress.Text + ":" + TbLocalLicenseServerPort.Value);
+        }
+
+        private bool _restartClientOnClose = true;
+
+        private void BtStopConnectionToLicenseServer_OnClick(object sender, RoutedEventArgs e)
+        {
+            ClientStarter.StopConnection();
+            BtRestoreConnectionToLicenseServer.IsEnabled = true;
+            BtStopConnectionToLicenseServer.IsEnabled = false;
+            TbLocalLicenseServerIpAddress.IsEnabled = true;
+            TbLocalLicenseServerPort.IsEnabled = true;
+            _restartClientOnClose = false;
+        }
+
+        private void BtRestoreConnectionToLicenseServer_OnClick(object sender, RoutedEventArgs e)
+        {
+            ClientStarter.StartConnection(ProductLicenseType.Revit);
+            BtRestoreConnectionToLicenseServer.IsEnabled = false;
+            BtStopConnectionToLicenseServer.IsEnabled = true;
+            TbLocalLicenseServerIpAddress.IsEnabled = false;
+            TbLocalLicenseServerPort.IsEnabled = false;
+            _restartClientOnClose = true;
         }
     }
 

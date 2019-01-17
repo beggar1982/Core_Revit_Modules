@@ -9,12 +9,13 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/ModPlusStyle;component/Styles/Controls.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
-            <XmlDataProvider x:Key="Lang" Source="E:/ModPlus/Languages/en-US.xml" XPath="ModPlus/RevitDlls"
-                             IsAsynchronous="False"></XmlDataProvider>
+            <XmlDataProvider x:Key="Lang" Source="E:/ModPlus/Languages/en-US.xml" XPath="ModPlus/RevitDlls"></XmlDataProvider>
+            <XmlDataProvider x:Key="LangApi" Source="E:/ModPlus/Languages/en-US.xml" XPath="ModPlus/ModPlusAPI"></XmlDataProvider>
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -99,6 +100,60 @@
                          MinWidth="200" Name="TbRegistryKey" IsReadOnly="True"></TextBox>
                 <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"  VerticalAlignment="Center"
                            Name="TbAboutRegKey"></TextBlock>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="{Binding Source={StaticResource LangApi}, XPath=h16}" Grid.Row="3"
+                          Name="GroupBoxLicenseServer">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding Source={StaticResource LangApi}, XPath=h17}"
+                                   Name="TbLocalLicenseServerIpAddressHeader"
+                                   Grid.Row="0" Grid.Column="0"></TextBlock>
+                <AdornerDecorator Grid.Row="0" Grid.Column="1">
+                    <TextBox MinWidth="100" mps:TextFieldAssist.SelectAllOnFocus="True"
+                                     Name="TbLocalLicenseServerIpAddress"
+                                     mps:TextFieldAssist.ClearTextButton="True">
+                    </TextBox>
+                </AdornerDecorator>
+                <TextBlock Text="{Binding Source={StaticResource LangApi}, XPath=h18}"
+                                   Name="TbLocalLicenseServerPortHeader"
+                                   Grid.Row="0" Grid.Column="2"></TextBlock>
+                <AdornerDecorator Grid.Row="0" Grid.Column="3">
+                    <mps:NumericBox MinWidth="50" Name="TbLocalLicenseServerPort"
+                                            NumericInputMode="Numbers"
+                                            HideUpDownButtons="True" Minimum="0" Maximum="65535">
+                    </mps:NumericBox>
+                </AdornerDecorator>
+                <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5"
+                                HorizontalAlignment="Stretch" Name="BtCheckLocalLicenseServerConnection"
+                                Click="BtCheckLocalLicenseServerConnection_OnClick"
+                                Content="{Binding Source={StaticResource LangApi}, XPath=h19}"></Button>
+                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5"
+                                Name="BtStopConnectionToLicenseServer"
+                                Click="BtStopConnectionToLicenseServer_OnClick"
+                                HorizontalAlignment="Stretch"
+                                Content="{Binding Source={StaticResource LangApi}, XPath=h23}"></Button>
+                <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5"
+                                Name="BtRestoreConnectionToLicenseServer"
+                                Click="BtRestoreConnectionToLicenseServer_OnClick"
+                                HorizontalAlignment="Stretch"
+                                Content="{Binding Source={StaticResource LangApi}, XPath=h24}"></Button>
+                <CheckBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="5"
+                                  Name="ChkDisableConnectionWithLicenseServer"
+                                  Content="{Binding Source={StaticResource LangApi}, XPath=h25}"></CheckBox>
             </Grid>
         </GroupBox>
     </Grid>

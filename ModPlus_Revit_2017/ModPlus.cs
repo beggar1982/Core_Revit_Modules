@@ -37,8 +37,12 @@ namespace ModPlus_Revit
                 // проверка загруженности модуля автообновления
                 CheckAutoUpdaterLoaded();
 
-                // license server client
-                ClientStarter.StartConnection(ProductLicenseType.Revit);
+                var disableConnectionWithLicenseServer =
+                    bool.TryParse(UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.Settings,
+                        "DisableConnectionWithLicenseServerInRevit"), out var b) && b; // false
+                // start license server client
+                if (!disableConnectionWithLicenseServer)
+                    ClientStarter.StartConnection(ProductLicenseType.Revit);
 
                 return Result.Succeeded;
             }
