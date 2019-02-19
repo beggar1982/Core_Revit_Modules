@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Windows.Media.Imaging;
-using System.Xml.Linq;
-using Autodesk.Revit.UI;
-using ModPlusAPI;
-using ModPlusAPI.Windows;
-using ModPlus_Revit.Helpers;
-using RibbonPanel = Autodesk.Revit.UI.RibbonPanel;
-
-
-namespace ModPlus_Revit.App
+﻿namespace ModPlus_Revit.App
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using System.Windows.Media.Imaging;
+    using System.Xml.Linq;
+    using Autodesk.Revit.UI;
+    using ModPlusAPI;
+    using ModPlusAPI.Windows;
+    using Helpers;
+
     public static class RibbonBuilder
     {
         private static string _tabName = "ModPlus";
@@ -32,6 +29,12 @@ namespace ModPlus_Revit.App
             {
                 ExceptionBox.Show(exception);
             }
+        }
+
+        public static string GetHelpUrl(string functionName)
+        {
+            var lang = Language.RusWebLanguages.Contains(Language.CurrentLanguageName) ? "ru" : "en";
+            return $"https://modplus.org/{lang}/help/{functionName.ToLower()}";
         }
 
         private static void AddPanels(UIControlledApplication application)
@@ -82,7 +85,8 @@ namespace ModPlus_Revit.App
                                             Language.GetFunctionFullDescription(loadedFunction.Name,
                                                 loadedFunction.FullDescription),
                                             loadedFunction.ToolTipHelpImage, loadedFunction.Location,
-                                            loadedFunction.ClassName
+                                            loadedFunction.ClassName,
+                                            GetHelpUrl(loadedFunction.Name)
                                         ));
                                         // Затем добавляем подфункции
                                         foreach (var subFunc in func.Elements("SubFunction"))
@@ -102,7 +106,8 @@ namespace ModPlus_Revit.App
                                                 Language.GetFunctionFullDescription(loadedFunction.Name,
                                                     loadedFunction.FullDescription),
                                                 loadedSubFunction.ToolTipHelpImage,
-                                                loadedSubFunction.Location, loadedSubFunction.ClassName
+                                                loadedSubFunction.Location, loadedSubFunction.ClassName,
+                                                GetHelpUrl(loadedFunction.Name)
                                             ));
                                         }
                                     }
@@ -124,7 +129,8 @@ namespace ModPlus_Revit.App
                                             Language.GetFunctionFullDescription(loadedFunction.Name,
                                                 loadedFunction.FullDescription),
                                             loadedFunction.ToolTipHelpImage,
-                                            loadedFunction.Location, loadedFunction.ClassName
+                                            loadedFunction.Location, loadedFunction.ClassName,
+                                            GetHelpUrl(loadedFunction.Name)
                                         ));
                                         for (int i = 0; i < loadedFunction.SubClassNames.Count; i++)
                                         {
@@ -138,7 +144,8 @@ namespace ModPlus_Revit.App
                                                 Language.GetFunctionFullDescription(loadedFunction.Name,
                                                     loadedFunction.SubFullDescriptions[i], i + 1),
                                                 loadedFunction.SubHelpImages[i], loadedFunction.Location,
-                                                loadedFunction.SubClassNames[i]
+                                                loadedFunction.SubClassNames[i],
+                                                GetHelpUrl(loadedFunction.Name)
                                             ));
                                         }
                                     }
@@ -155,7 +162,8 @@ namespace ModPlus_Revit.App
                                                 loadedFunction.FullDescription),
                                             loadedFunction.ToolTipHelpImage,
                                             loadedFunction.Location,
-                                            loadedFunction.ClassName);
+                                            loadedFunction.ClassName,
+                                            GetHelpUrl(loadedFunction.Name));
                                     }
                                 }
                             }
@@ -182,7 +190,8 @@ namespace ModPlus_Revit.App
                                                 loadedFunction.FullDescription),
                                             loadedFunction.ToolTipHelpImage,
                                             loadedFunction.Location,
-                                            loadedFunction.ClassName));
+                                            loadedFunction.ClassName,
+                                            GetHelpUrl(loadedFunction.Name)));
                                 }
 
                                 if (stackedItems.Count == 2)
@@ -212,13 +221,13 @@ namespace ModPlus_Revit.App
         }
 
         private static void AddPushButton(RibbonPanel panel, string name, string lName, string description, string img16,
-            string img32, string fullDescription, string helpImage, string location, string className)
+            string img32, string fullDescription, string helpImage, string location, string className, string helpUrl)
         {
-            var pushButton = panel.AddItem(CreatePushButtonData(name, lName, description, img16, img32, fullDescription, helpImage, location, className)) as PushButton;
+            var pushButton = panel.AddItem(CreatePushButtonData(name, lName, description, img16, img32, fullDescription, helpImage, location, className, helpUrl)) as PushButton;
         }
 
         private static PushButtonData CreatePushButtonData(string name, string lName, string description, string img16,
-            string img32, string fullDescription, string helpImage, string location, string className)
+            string img32, string fullDescription, string helpImage, string location, string className, string helpUrl)
         {
             var pshBtn = new PushButtonData(name, ConvertLName(lName), location, className)
             {
@@ -252,6 +261,10 @@ namespace ModPlus_Revit.App
             {
                 // ignored
             }
+
+            // help
+            if(!string.IsNullOrEmpty(helpUrl))
+                pshBtn.SetContextualHelp(new ContextualHelp(ContextualHelpType.Url, helpUrl));
             return pshBtn;
         }
 
