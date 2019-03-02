@@ -75,13 +75,15 @@
     <Compile Include="..\ModPlus_Revit_2015\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="..\ModPlus_Revit_2015\VersionData.cs">
+      <Link>VersionData.cs</Link>
+    </Compile>
     <Compile Include="App\mpMainSettings.xaml.cs">
       <DependentUpon>mpMainSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="App\RibbonBuilder.cs" />
     <Compile Include="Helpers\LoadFunctionsHelper.cs" />
     <Compile Include="ModPlus.cs" />
-    <Compile Include="VersionData.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Windows\" />

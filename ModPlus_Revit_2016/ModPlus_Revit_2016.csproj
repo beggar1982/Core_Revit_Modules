@@ -75,6 +75,9 @@
     <Compile Include="..\ModPlus_Revit_2015\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="..\ModPlus_Revit_2015\VersionData.cs">
+      <Link>VersionData.cs</Link>
+    </Compile>
     <Compile Include="..\ModPlus_Revit_2017\App\mpMainSettings.xaml.cs">
       <Link>App\mpMainSettings.xaml.cs</Link>
       <DependentUpon>mpMainSettings.xaml</DependentUpon>
@@ -88,7 +91,6 @@
     <Compile Include="..\ModPlus_Revit_2017\ModPlus.cs">
       <Link>ModPlus.cs</Link>
     </Compile>
-    <Compile Include="VersionData.cs" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\HelpBt.png" />

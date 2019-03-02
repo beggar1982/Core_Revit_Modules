@@ -4,64 +4,53 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CEF0938A-1EB1-41C6-8BE2-7E6AD500F808}</ProjectGuid>
+    <ProjectGuid>{97BFA12C-0BAF-4ED1-A7D1-9455D50ADFC1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ModPlus_Revit</RootNamespace>
-    <AssemblyName>ModPlus_Revit_2018</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <AssemblyName>ModPlus_Revit_2020</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;R2018</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;R2020</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;R2018</DefineConstants>
+    <DefineConstants>TRACE;R2020</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseWithSign|AnyCPU'">
-    <OutputPath>bin\ReleaseWithSign\</OutputPath>
-    <DefineConstants>TRACE;R2018</DefineConstants>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ModPlusAPI">
       <HintPath>..\..\..\..\..\ModPlus\Extensions\ModPlusAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="ModPlusStyle, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="ModPlusStyle">
       <HintPath>..\..\..\..\..\ModPlus\Extensions\ModPlusStyle.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="RevitAPI">
-      <HintPath>C:\_Revit dlls\2018\RevitAPI.dll</HintPath>
+      <HintPath>C:\_Revit dlls\2020\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="RevitAPIUI">
-      <HintPath>C:\_Revit dlls\2018\RevitAPIUI.dll</HintPath>
+      <HintPath>C:\_Revit dlls\2020\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
@@ -74,14 +63,14 @@
     <Compile Include="..\ModPlus_Revit_2015\VersionData.cs">
       <Link>VersionData.cs</Link>
     </Compile>
-    <Compile Include="..\ModPlus_Revit_2017\App\mpMainSettings.xaml.cs">
+    <Compile Include="..\modplus_revit_2017\app\mpMainSettings.xaml.cs">
       <Link>App\mpMainSettings.xaml.cs</Link>
       <DependentUpon>mpMainSettings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="..\ModPlus_Revit_2017\App\RibbonBuilder.cs">
+    <Compile Include="..\modplus_revit_2017\app\RibbonBuilder.cs">
       <Link>App\RibbonBuilder.cs</Link>
     </Compile>
-    <Compile Include="..\ModPlus_Revit_2017\Helpers\LoadFunctionsHelper.cs">
+    <Compile Include="..\modplus_revit_2017\helpers\LoadFunctionsHelper.cs">
       <Link>Helpers\LoadFunctionsHelper.cs</Link>
     </Compile>
     <Compile Include="..\ModPlus_Revit_2017\ModPlus.cs">
@@ -89,22 +78,24 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\HelpBt.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Windows\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="..\ModPlus_Revit_2017\App\mpMainSettings.xaml">
+    <Page Include="..\modplus_revit_2017\app\mpMainSettings.xaml">
       <Link>App\mpMainSettings.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="..\ModPlus_Revit_2017\Resources\forIcon_256.png">
+    <Resource Include="..\modplus_revit_2017\resources\forIcon_256.png">
       <Link>Resources\forIcon_256.png</Link>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\modplus_revit_2018\resources\HelpBt.png">
+      <Link>Resources\HelpBt.png</Link>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Windows\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
