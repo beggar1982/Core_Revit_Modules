@@ -14,6 +14,7 @@ namespace ModPlus_Revit
     using System.Net;
     using System.Xml.Linq;
     using ModPlusAPI.LicenseServer;
+    using ModPlusAPI.UserInfo;
 
     public class ModPlus : IExternalApplication
     {
@@ -43,6 +44,9 @@ namespace ModPlus_Revit
                 // start license server client
                 if (!disableConnectionWithLicenseServer)
                     ClientStarter.StartConnection(ProductLicenseType.Revit);
+
+                // user info
+                AuthorizationOnStartup();
 
                 return Result.Succeeded;
             }
@@ -189,6 +193,19 @@ namespace ModPlus_Revit
                     catch
                     {
                     }
+                }
+            }
+        }
+
+        private async void AuthorizationOnStartup()
+        {
+            await UserInfoService.GetUserInfoAsync().ConfigureAwait(false);
+            var userInfo = UserInfoService.GetUserInfoResponseFromHash();
+            if (userInfo != null)
+            {
+                if (!userInfo.IsLocalData && !await ModPlusAPI.Web.Connection.HasAllConnectionAsync().ConfigureAwait(false))
+                {
+                    ModPlusAPI.Variables.UserInfoHash = string.Empty;
                 }
             }
         }

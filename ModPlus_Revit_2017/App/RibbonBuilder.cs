@@ -160,17 +160,29 @@
                 ExceptionBox.Show(exception);
             }
         }
+        
         private static void AddHelpPanel(UIControlledApplication application)
         {
             // create the panel
             RibbonPanel panel = application.CreateRibbonPanel(_tabName, _tabName);
-            PushButtonData rid = new PushButtonData(
+
+            // user info
+            PushButtonData userInfoButton = new PushButtonData(
+                "mpUserInfo",
+                ConvertLName(Language.GetItem(_langItem, "h13")),
+                Assembly.GetExecutingAssembly().Location,
+                "ModPlus_Revit.App.UserInfoCommand");
+            userInfoButton.LargeImage = new BitmapImage(new Uri("pack://application:,,,/Modplus_Revit_" + MpVersionData.CurRevitVers + ";component/Resources/UserInfo_32x32.png"));
+            panel.AddItem(userInfoButton);
+
+            // settings
+            PushButtonData settingsButton = new PushButtonData(
                 "mpSettings",
                 Language.GetItem(_langItem, "h12"),
                 Assembly.GetExecutingAssembly().Location,
                 "ModPlus_Revit.App.MpMainSettingsFunction");
-            rid.LargeImage = new BitmapImage(new Uri("pack://application:,,,/Modplus_Revit_" + MpVersionData.CurRevitVers + ";component/Resources/HelpBt.png"));
-            panel.AddItem(rid);
+            settingsButton.LargeImage = new BitmapImage(new Uri("pack://application:,,,/Modplus_Revit_" + MpVersionData.CurRevitVers + ";component/Resources/HelpBt.png"));
+            panel.AddItem(settingsButton);
         }
 
 

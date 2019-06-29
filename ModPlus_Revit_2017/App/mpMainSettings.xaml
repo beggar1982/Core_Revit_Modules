@@ -17,8 +17,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <GroupBox Header="{Binding Source={StaticResource Lang}, XPath=h2}" Grid.Row="0" >
             <Grid>
@@ -60,49 +58,8 @@
                 </StackPanel>
             </Grid>
         </GroupBox>
-        <GroupBox Header="{Binding Source={StaticResource Lang}, XPath=h3}" Grid.Row="1" >
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="e-mail:"  VerticalAlignment="Center"></TextBlock>
-                <TextBox  VerticalAlignment="Center" Name="TbEmailAdress"
-                         Width="200" LostFocus="TbEmailAdress_OnLostFocus"
-                         mps:TextFieldAssist.ClearTextButton="True"
-                         mps:HintAssist.Hint="login@domain.com"></TextBox>
-                <Button VerticalAlignment="Center"
-                        Style="{DynamicResource ModPlusFlatButton}" MinWidth="0" Padding="4"
-                        ToolTipService.InitialShowDelay="0" Foreground="{DynamicResource AccentColorBrush}"
-                        ToolTip="{Binding Source={StaticResource Lang}, XPath=tt2}">
-                    <Viewbox Width="18" Height="18">
-                        <Canvas Width="24" Height="24">
-                            <Path Data="M10,19H13V22H10V19M12,2C17.35,2.22 19.68,7.62 16.5,11.67C15.67,12.67 14.33,13.33 13.67,14.17C13,15 13,16 13,17H10C10,15.33 10,13.92 10.67,12.92C11.33,11.92 12.67,11.33 13.5,10.67C15.92,8.43 15.32,5.26 12,5A3,3 0 0,0 9,8H6A6,6 0 0,1 12,2Z" 
-                                  Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Foreground}" />
-                        </Canvas>
-                    </Viewbox>
-                </Button>
-            </StackPanel>
-        </GroupBox>
-        <GroupBox Header="{Binding Source={StaticResource Lang}, XPath=h4}" Grid.Row="2" >
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=h9}"
-                           Grid.Column="0" Grid.Row="0"
-                            VerticalAlignment="Center"></TextBlock>
-                <TextBox Grid.Column="1" Grid.Row="0" 
-                         mps:TextFieldAssist.ClearTextButton="True"
-                         mps:HintAssist.Hint="{Binding Source={StaticResource Lang}, XPath=tt3}"
-                         MinWidth="200" Name="TbRegistryKey" IsReadOnly="True"></TextBox>
-                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"  VerticalAlignment="Center"
-                           Name="TbAboutRegKey"></TextBlock>
-            </Grid>
-        </GroupBox>
-        <GroupBox Header="{Binding Source={StaticResource LangApi}, XPath=h16}" Grid.Row="3"
+        
+        <GroupBox Header="{Binding Source={StaticResource LangApi}, XPath=h16}" Grid.Row="1"
                           Name="GroupBoxLicenseServer">
             <Grid>
                 <Grid.ColumnDefinitions>

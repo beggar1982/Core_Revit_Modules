@@ -48,6 +48,10 @@
       <HintPath>..\..\..\..\..\ModPlus\Extensions\ModPlusAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="ModPlusService.Dto">
+      <HintPath>..\..\..\..\..\ModPlus\Extensions\ModPlusService.Dto.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="ModPlusStyle, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\ModPlus\Extensions\ModPlusStyle.dll</HintPath>
@@ -82,6 +86,7 @@
       <DependentUpon>mpMainSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="App\RibbonBuilder.cs" />
+    <Compile Include="App\UserInfoCommand.cs" />
     <Compile Include="Helpers\LoadFunctionsHelper.cs" />
     <Compile Include="ModPlus.cs" />
   </ItemGroup>
@@ -99,6 +104,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\forIcon_256.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\UserInfo_32x32.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

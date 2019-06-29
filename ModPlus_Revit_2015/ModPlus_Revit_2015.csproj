@@ -45,6 +45,10 @@
       <HintPath>..\..\..\..\..\ModPlus\Extensions\ModPlusAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="ModPlusService.Dto">
+      <HintPath>..\..\..\..\..\ModPlus\Extensions\ModPlusService.Dto.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="ModPlusStyle, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\ModPlus\Extensions\ModPlusStyle.dll</HintPath>
@@ -80,6 +84,9 @@
     <Compile Include="..\ModPlus_Revit_2017\App\RibbonBuilder.cs">
       <Link>App\RibbonBuilder.cs</Link>
     </Compile>
+    <Compile Include="..\ModPlus_Revit_2017\App\UserInfoCommand.cs">
+      <Link>App\UserInfoCommand.cs</Link>
+    </Compile>
     <Compile Include="..\ModPlus_Revit_2017\Helpers\LoadFunctionsHelper.cs">
       <Link>Helpers\LoadFunctionsHelper.cs</Link>
     </Compile>
@@ -105,6 +112,11 @@
   <ItemGroup>
     <Resource Include="..\ModPlus_Revit_2017\Resources\forIcon_256.png">
       <Link>Resources\forIcon_256.png</Link>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\ModPlus_Revit_2017\Resources\UserInfo_32x32.png">
+      <Link>Resources\UserInfo_32x32.png</Link>
     </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

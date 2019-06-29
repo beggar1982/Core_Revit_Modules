@@ -1,12 +1,10 @@
 ﻿namespace ModPlus_Revit.App
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
-    using System.Windows.Media;
     using Autodesk.Revit.DB;
     using ModPlusAPI;
     using ModPlusAPI.LicenseServer;
@@ -23,10 +21,7 @@
             Title = ModPlusAPI.Language.GetItem(LangItem, "h1");
             SetLanguageValues();
             FillThemesAndColors();
-            SetAppRegistryKeyForCurrentUser();
             LoadSettingsFromConfigFileAndRegistry();
-            GetDataByVars();
-            Closing += MpMainSettings_Closing;
             Closed += MpMainSettings_OnClosed;
 
             // license server
@@ -75,23 +70,6 @@
             MiTheme.SelectedItem = pluginStyle;
         }
         
-        // Заполнение поля Ключ продукта
-        private void SetAppRegistryKeyForCurrentUser()
-        {
-            TbRegistryKey.Text = Variables.RegistryKey;
-            var regVariant = Regestry.GetValue("RegestryVariant");
-            if (!string.IsNullOrEmpty(regVariant))
-            {
-                TbAboutRegKey.Visibility = System.Windows.Visibility.Visible;
-                if (regVariant.Equals("0"))
-                    TbAboutRegKey.Text = ModPlusAPI.Language.GetItem(LangItem, "h10") + " " +
-                        Regestry.GetValue("HDmodel");
-                else if (regVariant.Equals("1"))
-                    TbAboutRegKey.Text = ModPlusAPI.Language.GetItem(LangItem, "h11") + " " +
-                        Regestry.GetValue("gName");
-            }
-        }
-
         // Загрузка данных из файла конфигурации
         // которые требуется отобразить в окне
         private void LoadSettingsFromConfigFileAndRegistry()
@@ -104,21 +82,7 @@
             TbLocalLicenseServerIpAddress.Text = Regestry.GetValue("LocalLicenseServerIpAddress");
             TbLocalLicenseServerPort.Value = int.TryParse(Regestry.GetValue("LocalLicenseServerPort"), out var i) ? i : 0;
         }
-        /// <summary>
-        /// Получение значений из глобальных переменных плагина
-        /// </summary>
-        private void GetDataByVars()
-        {
-            try
-            {
-                // email
-                TbEmailAdress.Text = Variables.UserEmail;
-            }
-            catch (Exception exception)
-            {
-                ExceptionBox.Show(exception);
-            }
-        }
+        
         // Выбор разделителя целой и дробной части для чисел
         private void CbSeparatorSettings_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -132,34 +96,16 @@
             ModPlusStyle.ThemeManager.ChangeTheme(this, theme);
         }
         
-        private void MpMainSettings_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            if (!string.IsNullOrEmpty(TbEmailAdress.Text))
-            {
-                if (IsValidEmail(TbEmailAdress.Text))
-                    TbEmailAdress.BorderBrush = FindResource("BlackBrush") as Brush;
-                else
-                {
-                    TbEmailAdress.BorderBrush = Brushes.Red;
-                    ModPlusAPI.Windows.MessageBox.Show(
-                        ModPlusAPI.Language.GetItem(LangItem, "tt4"));
-                    TbEmailAdress.Focus();
-                    e.Cancel = true;
-                }
-            }
-        }
-        [SuppressMessage("ReSharper", "PossibleInvalidOperationException")]
         private void MpMainSettings_OnClosed(object sender, EventArgs e)
         {
             try
             {
                 // Так как эти значения хранятся в переменных, то их нужно перезаписать
                 Regestry.SetValue("Separator", CbSeparatorSettings.SelectedIndex.ToString(CultureInfo.InvariantCulture));
-                // Сохраняем в реестр почту, если изменилась
-                Variables.UserEmail = TbEmailAdress.Text;
-
+                
                 // License server
                 UserConfigFile.SetValue(UserConfigFile.ConfigFileZone.Settings, "DisableConnectionWithLicenseServerInRevit",
+                    // ReSharper disable once PossibleInvalidOperationException
                     ChkDisableConnectionWithLicenseServer.IsChecked.Value.ToString(), true);
                 Regestry.SetValue("LocalLicenseServerIpAddress", TbLocalLicenseServerIpAddress.Text);
                 Regestry.SetValue("LocalLicenseServerPort", TbLocalLicenseServerPort.Value.ToString());
@@ -177,37 +123,16 @@
             }
 
         }
-        private void TbEmailAdress_OnLostFocus(object sender, RoutedEventArgs e)
-        {
-            if (sender is TextBox tb)
-            {
-                if (IsValidEmail(tb.Text))
-                    tb.BorderBrush = FindResource("BlackBrush") as Brush;
-                else tb.BorderBrush = Brushes.Red;
-            }
-        }
-
-        private static bool IsValidEmail(string email)
-        {
-            try
-            {
-                var addr = new System.Net.Mail.MailAddress(email);
-                return addr.Address == email;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
+        
         private async void BtCheckLocalLicenseServerConnection_OnClick(object sender, RoutedEventArgs e)
         {
+            // ReSharper disable once AsyncConverter.AsyncAwaitMayBeElidedHighlighting
             await this.ShowMessageAsync(
                 ClientStarter.IsLicenseServerAvailable()
                     ? ModPlusAPI.Language.GetItem("ModPlusAPI", "h21")
                     : ModPlusAPI.Language.GetItem("ModPlusAPI", "h20"),
                 ModPlusAPI.Language.GetItem("ModPlusAPI", "h22") + " " +
-                TbLocalLicenseServerIpAddress.Text + ":" + TbLocalLicenseServerPort.Value);
+                TbLocalLicenseServerIpAddress.Text + ":" + TbLocalLicenseServerPort.Value).ConfigureAwait(true);
         }
 
         private bool _restartClientOnClose = true;
