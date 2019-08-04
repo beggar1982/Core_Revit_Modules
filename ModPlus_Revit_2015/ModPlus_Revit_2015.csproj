@@ -93,6 +93,7 @@
     <Compile Include="..\ModPlus_Revit_2017\ModPlus.cs">
       <Link>ModPlus.cs</Link>
     </Compile>
+    <Compile Include="App\MpMainSettingsFunction.cs" />
     <Compile Include="VersionData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -118,6 +119,13 @@
     <Resource Include="..\ModPlus_Revit_2017\Resources\UserInfo_32x32.png">
       <Link>Resources\UserInfo_32x32.png</Link>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Flags\be-BY.png" />
+    <Resource Include="Resources\Flags\de-DE.png" />
+    <Resource Include="Resources\Flags\en-US.png" />
+    <Resource Include="Resources\Flags\ru-RU.png" />
+    <Resource Include="Resources\Flags\uk-UA.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

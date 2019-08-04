@@ -5,7 +5,7 @@
     using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
-    using Autodesk.Revit.DB;
+    using System.Windows.Media.Imaging;
     using ModPlusAPI;
     using ModPlusAPI.LicenseServer;
     using ModPlusAPI.Windows;
@@ -14,11 +14,13 @@
     public partial class MpMainSettings
     {
         private const string LangItem = "RevitDlls";
+        private Language.LangItem _curLangItem;
 
         public MpMainSettings()
         {
             InitializeComponent();
             Title = ModPlusAPI.Language.GetItem(LangItem, "h1");
+            FillAndSetLanguages();
             SetLanguageValues();
             FillThemesAndColors();
             LoadSettingsFromConfigFileAndRegistry();
@@ -39,6 +41,14 @@
                 TbLocalLicenseServerIpAddress.IsEnabled = true;
                 TbLocalLicenseServerPort.IsEnabled = true;
             }
+        }
+
+        private void FillAndSetLanguages()
+        {
+            var languagesByFiles = ModPlusAPI.Language.GetLanguagesByFiles();
+            CbLanguages.ItemsSource = languagesByFiles;
+            CbLanguages.SelectedItem = languagesByFiles.FirstOrDefault(li => li.Name == ModPlusAPI.Language.CurrentLanguageName);
+            _curLangItem = (Language.LangItem)CbLanguages.SelectedItem;
         }
 
         private void SetLanguageValues()
@@ -156,16 +166,34 @@
             TbLocalLicenseServerPort.IsEnabled = false;
             _restartClientOnClose = true;
         }
-    }
 
-    [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
-    public class MpMainSettingsFunction : Autodesk.Revit.UI.IExternalCommand
-    {
-        public Autodesk.Revit.UI.Result Execute(Autodesk.Revit.UI.ExternalCommandData commandData, ref string message, ElementSet elements)
+        private void CbLanguages_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var win = new MpMainSettings();
-            win.ShowDialog();
-            return Autodesk.Revit.UI.Result.Succeeded;
+            // fill image
+            if (e.AddedItems[0] is Language.LangItem li)
+            {
+                ModPlusAPI.Language.SetCurrentLanguage(li.Name);
+                this.SetLanguageProviderForModPlusWindow();
+                SetLanguageValues();
+                if (TbMessageAboutLanguage != null && _curLangItem != null)
+                {
+                    TbMessageAboutLanguage.Visibility = li.Name == _curLangItem.Name
+                        ? Visibility.Collapsed
+                        : Visibility.Visible;
+                }
+                try
+                {
+                    BitmapImage bi = new BitmapImage();
+                    bi.BeginInit();
+                    bi.UriSource = new Uri($"pack://application:,,,/ModPlus_Revit_{MpVersionData.CurRevitVers};component/Resources/Flags/{li.Name}.png");
+                    bi.EndInit();
+                    LanguageImage.Source = bi;
+                }
+                catch
+                {
+                    LanguageImage.Source = null;
+                }
+            }
         }
     }
 }

@@ -15,11 +15,13 @@
     {
         private static string _tabName = "ModPlus";
         private static string _langItem = "RevitDlls";
+        
         public static void CreateRibbon(UIControlledApplication application)
         {
             try
             {
                 application.CreateRibbonTab(_tabName);
+                
                 // create and fill panels
                 AddPanels(application);
 
@@ -30,7 +32,7 @@
                 ExceptionBox.Show(exception);
             }
         }
-
+        
         public static string GetHelpUrl(string functionName)
         {
             var lang = Language.RusWebLanguages.Contains(Language.CurrentLanguageName) ? "ru" : "en";

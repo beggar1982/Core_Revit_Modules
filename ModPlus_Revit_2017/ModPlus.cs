@@ -1,20 +1,19 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using Autodesk.Revit.UI;
-using Microsoft.Win32;
-using ModPlusAPI;
-using ModPlusAPI.Windows;
-using ModPlus_Revit.Helpers;
-
-namespace ModPlus_Revit
+﻿namespace ModPlus_Revit
 {
     using System.Net;
     using System.Xml.Linq;
     using ModPlusAPI.LicenseServer;
     using ModPlusAPI.UserInfo;
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
+    using Autodesk.Revit.UI;
+    using Microsoft.Win32;
+    using ModPlusAPI;
+    using ModPlusAPI.Windows;
+    using ModPlus_Revit.Helpers;
 
     public class ModPlus : IExternalApplication
     {
@@ -52,7 +51,7 @@ namespace ModPlus_Revit
             }
             catch (Exception exception)
             {
-                // Тут отображение ошибки должно быть в обычном окне, т.к. сборки могли еще не загрузилится
+                // Тут отображение ошибки должно быть в обычном окне, т.к. сборки могли еще не загрузился
                 TaskDialog.Show("ModPlus", exception.Message + Environment.NewLine + exception.StackTrace,
                     TaskDialogCommonButtons.Ok);
                 return Result.Failed;

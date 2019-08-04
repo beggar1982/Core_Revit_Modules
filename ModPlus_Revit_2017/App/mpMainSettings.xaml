@@ -23,39 +23,67 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <!--Language-->
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Source={StaticResource Lang}, XPath=h5}"></TextBlock>
+                <ComboBox Grid.Row="0" Grid.Column="1" 
+                          Name="CbLanguages" SelectionChanged="CbLanguages_OnSelectionChanged"
+                          ItemsSource="{Binding}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=DisplayName}"></TextBlock>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Image Grid.Column="2" Grid.Row="0" Height="24" Stretch="UniformToFill"
+                       HorizontalAlignment="Left"
+                       Margin="{DynamicResource ModPlusDefaultMargin}"
+                       Name="LanguageImage" UseLayoutRounding="False"
+                       RenderOptions.BitmapScalingMode="HighQuality">
+                </Image>
+                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4"
+                           TextWrapping="Wrap" MaxWidth="400" Visibility="Collapsed"
+                           HorizontalAlignment="Center" TextAlignment="Center"
+                           Text="{Binding Source={StaticResource Lang}, XPath=h14}"
+                           Name="TbMessageAboutLanguage"
+                           FontWeight="SemiBold" Foreground="{DynamicResource ErrorBrush}"></TextBlock>
                 <!--Theme-->
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=h6}"
-                               VerticalAlignment="Center" MinWidth="120"></TextBlock>
-                    <ComboBox ItemsSource="{Binding}" Name="MiTheme" 
-                              SelectionChanged="MiTheme_OnSelectionChanged">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate DataType="mps:Theme">
-                                <StackPanel Orientation="Horizontal">
-                                    <Border CornerRadius="4" Width="40" Height="30"
-                                            Background="{Binding Path=ShowCaseBackgroundBrush}">
-                                        <Ellipse HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                 Width="20" Height="20"
-                                                 Fill="{Binding Path=ShowcaseBrush}"></Ellipse>
-                                    </Border>
-                                    <TextBlock VerticalAlignment="Center" Text="{Binding Path=DisplayName}" Margin="10 0"></TextBlock>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                </StackPanel>
+                <TextBlock Grid.Row="2" Grid.Column="0"
+                           Text="{Binding Source={StaticResource Lang}, XPath=h6}"></TextBlock>
+                <ComboBox Grid.Row="2" Grid.Column="1"
+                          ItemsSource="{Binding}" Name="MiTheme" 
+                          SelectionChanged="MiTheme_OnSelectionChanged">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate DataType="mps:Theme">
+                            <StackPanel Orientation="Horizontal">
+                                <Border CornerRadius="4" Width="40" Height="30"
+                                        Background="{Binding Path=ShowCaseBackgroundBrush}">
+                                    <Ellipse HorizontalAlignment="Center" VerticalAlignment="Center"
+                                             Width="20" Height="20"
+                                             Fill="{Binding Path=ShowcaseBrush}"></Ellipse>
+                                </Border>
+                                <TextBlock VerticalAlignment="Center" Text="{Binding Path=DisplayName}" Margin="10 0"></TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
                 <!--Separator-->
-                <StackPanel Grid.Row="1" Orientation="Horizontal"
-                            ToolTip="{Binding Source={StaticResource Lang}, XPath=tt1}">
-                    <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=h8}"
-                                MinWidth="120" VerticalAlignment="Center"></TextBlock>
-                    <ComboBox VerticalAlignment="Center"  Name="CbSeparatorSettings"
-                              SelectionChanged="CbSeparatorSettings_OnSelectionChanged">
-                        <ComboBoxItem Content="."></ComboBoxItem>
-                        <ComboBoxItem Content=","></ComboBoxItem>
-                    </ComboBox>
-                </StackPanel>
+                <TextBlock Grid.Row="3" Grid.Column="0"
+                           Text="{Binding Source={StaticResource Lang}, XPath=h8}"></TextBlock>
+                <ComboBox Grid.Row="3" Grid.Column="1" Name="CbSeparatorSettings"
+                          SelectionChanged="CbSeparatorSettings_OnSelectionChanged"
+                          ToolTip="{Binding Source={StaticResource Lang}, XPath=tt1}">
+                    <ComboBoxItem Content="."></ComboBoxItem>
+                    <ComboBoxItem Content=","></ComboBoxItem>
+                </ComboBox>
             </Grid>
         </GroupBox>
         

@@ -76,6 +76,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\ModPlus_Revit_2015\App\MpMainSettingsFunction.cs">
+      <Link>App\MpMainSettingsFunction.cs</Link>
+    </Compile>
     <Compile Include="..\ModPlus_Revit_2015\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
@@ -120,6 +123,23 @@
   <ItemGroup>
     <Resource Include="..\ModPlus_Revit_2017\Resources\UserInfo_32x32.png">
       <Link>Resources\UserInfo_32x32.png</Link>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\ModPlus_Revit_2015\Resources\Flags\be-BY.png">
+      <Link>Resources\Flags\be-BY.png</Link>
+    </Resource>
+    <Resource Include="..\ModPlus_Revit_2015\Resources\Flags\de-DE.png">
+      <Link>Resources\Flags\de-DE.png</Link>
+    </Resource>
+    <Resource Include="..\ModPlus_Revit_2015\Resources\Flags\en-US.png">
+      <Link>Resources\Flags\en-US.png</Link>
+    </Resource>
+    <Resource Include="..\ModPlus_Revit_2015\Resources\Flags\ru-RU.png">
+      <Link>Resources\Flags\ru-RU.png</Link>
+    </Resource>
+    <Resource Include="..\ModPlus_Revit_2015\Resources\Flags\uk-UA.png">
+      <Link>Resources\Flags\uk-UA.png</Link>
     </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
