@@ -18,7 +18,7 @@ namespace ModPlus_Revit.Helpers
         /// </summary>
         public static List<LoadedFunction> LoadedFunctions = new List<LoadedFunction>();
 
-        public static void GetDataFromFunctionIntrface(Assembly loadedFuncAssembly, string fileName)
+        public static void GetDataFromFunctionInterface(Assembly loadedFuncAssembly, string fileName)
         {
             var types = GetLoadableTypes(loadedFuncAssembly);
             foreach (var type in types)
@@ -43,8 +43,8 @@ namespace ModPlus_Revit.Helpers
                                          "_32x32.png",
                             AvailProductExternalVersion = MpVersionData.CurRevitVers,
                             FullDescription = function.FullDescription,
-                            ToolTipHelpImage = !string.IsNullOrEmpty(function.ToolTipHelpImage) 
-                            ? "pack://application:,,,/" + loadedFuncAssembly.GetName().FullName + ";component/Resources/Help/" + function.ToolTipHelpImage 
+                            ToolTipHelpImage = !string.IsNullOrEmpty(function.ToolTipHelpImage)
+                            ? "pack://application:,,,/" + loadedFuncAssembly.GetName().FullName + ";component/Resources/Help/" + function.ToolTipHelpImage
                             : string.Empty,
                             SubFunctionsNames = function.SubFunctionsNames,
                             SubFunctionsLNames = function.SubFunctionsLames,
@@ -93,7 +93,7 @@ namespace ModPlus_Revit.Helpers
                 return e.Types.Where(t => t != null);
             }
         }
-        
+
         /// <summary>
         /// Поиск файла функции, если в файле конфигурации вдруг нет атрибута
         /// </summary>
@@ -102,22 +102,17 @@ namespace ModPlus_Revit.Helpers
         public static string FindFile(string functionName)
         {
             var fileName = string.Empty;
-            var regKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("ModPlus");
-            using (regKey)
+            var funcDir = Path.Combine(ModPlusAPI.Constants.CurrentDirectory, "Functions", "Revit", functionName);
+            if (Directory.Exists(funcDir))
             {
-                if (regKey != null)
+                foreach (var file in Directory.GetFiles(funcDir, "*.dll", SearchOption.TopDirectoryOnly))
                 {
-                    var funcDir = Path.Combine(regKey.GetValue("TopDir").ToString(), "Functions", "Revit", functionName);
-                    if (Directory.Exists(funcDir))
-                        foreach (var file in Directory.GetFiles(funcDir, "*.dll", SearchOption.TopDirectoryOnly))
-                        {
-                            var fileInfo = new FileInfo(file);
-                            if (fileInfo.Name.Equals(functionName + "_" + MpVersionData.CurRevitVers + ".dll"))
-                            {
-                                fileName = file;
-                                break;
-                            }
-                        }
+                    var fileInfo = new FileInfo(file);
+                    if (fileInfo.Name.Equals(functionName + "_" + MpVersionData.CurRevitVers + ".dll"))
+                    {
+                        fileName = file;
+                        break;
+                    }
                 }
             }
             return fileName;

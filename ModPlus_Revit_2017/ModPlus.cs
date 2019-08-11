@@ -118,7 +118,7 @@
                                 {
                                     // load
                                     var localFuncAssembly = Assembly.LoadFrom(file);
-                                    LoadFunctionsHelper.GetDataFromFunctionIntrface(localFuncAssembly, file);
+                                    LoadFunctionsHelper.GetDataFromFunctionInterface(localFuncAssembly, file);
                                 }
                                 else
                                 {
@@ -126,7 +126,7 @@
                                     if (!string.IsNullOrEmpty(findedFile) && File.Exists(findedFile))
                                     {
                                         var localFuncAssembly = Assembly.LoadFrom(findedFile);
-                                        LoadFunctionsHelper.GetDataFromFunctionIntrface(localFuncAssembly, findedFile);
+                                        LoadFunctionsHelper.GetDataFromFunctionInterface(localFuncAssembly, findedFile);
                                     }
                                 }
                             }
