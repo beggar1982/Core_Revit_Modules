@@ -15,13 +15,13 @@
     {
         private static string _tabName = "ModPlus";
         private static string _langItem = "RevitDlls";
-        
+
         public static void CreateRibbon(UIControlledApplication application)
         {
             try
             {
                 application.CreateRibbonTab(_tabName);
-                
+
                 // create and fill panels
                 AddPanels(application);
 
@@ -32,7 +32,7 @@
                 ExceptionBox.Show(exception);
             }
         }
-        
+
         public static string GetHelpUrl(string functionName)
         {
             var lang = Language.RusWebLanguages.Contains(Language.CurrentLanguageName) ? "ru" : "en";
@@ -46,10 +46,17 @@
                 var confCuiXel = ModPlusAPI.RegistryData.Adaptation.GetCuiAsXElement("Revit");
                 // Проходим по группам
                 if (confCuiXel != null)
-                    foreach (var group in confCuiXel.Elements("Group"))
+                {
+                    foreach (XElement group in confCuiXel.Elements("Group"))
                     {
                         var groupNameAttr = group.Attribute("GroupName");
-                        if (groupNameAttr == null) continue;
+                        if (groupNameAttr == null)
+                            continue;
+
+                        // Так как панель нельзя удалить и нужно создать до заполнения, нужно сначала проверить группу
+                        if (!IsAnyFunctionContains(group))
+                            continue;
+
                         // create the panel
                         RibbonPanel panel = application.CreateRibbonPanel(
                             _tabName,
@@ -61,8 +68,7 @@
                             if (item.Name == "Function")
                             {
                                 var func = item;
-                                if (LoadFunctionsHelper.LoadedFunctions.Any(
-                                    x => x.Name.Equals(func.Attribute("Name")?.Value)))
+                                if (LoadFunctionsHelper.LoadedFunctions.Any(x => x.Name.Equals(func.Attribute("Name")?.Value)))
                                 {
                                     var loadedFunction =
                                         LoadFunctionsHelper.LoadedFunctions.FirstOrDefault(x =>
@@ -156,13 +162,14 @@
                             }
                         }
                     }
+                }
             }
             catch (Exception exception)
             {
                 ExceptionBox.Show(exception);
             }
         }
-        
+
         private static void AddHelpPanel(UIControlledApplication application)
         {
             // create the panel
@@ -175,6 +182,7 @@
                 Assembly.GetExecutingAssembly().Location,
                 "ModPlus_Revit.App.UserInfoCommand");
             userInfoButton.LargeImage = new BitmapImage(new Uri("pack://application:,,,/Modplus_Revit_" + MpVersionData.CurRevitVers + ";component/Resources/UserInfo_32x32.png"));
+            userInfoButton.SetContextualHelp(new ContextualHelp(ContextualHelpType.Url, GetHelpUrl("userinfo")));
             panel.AddItem(userInfoButton);
 
             // settings
@@ -184,6 +192,7 @@
                 Assembly.GetExecutingAssembly().Location,
                 "ModPlus_Revit.App.MpMainSettingsFunction");
             settingsButton.LargeImage = new BitmapImage(new Uri("pack://application:,,,/Modplus_Revit_" + MpVersionData.CurRevitVers + ";component/Resources/HelpBt.png"));
+            settingsButton.SetContextualHelp(new ContextualHelp(ContextualHelpType.Url, GetHelpUrl("mpsettings")));
             panel.AddItem(settingsButton);
         }
 
@@ -233,9 +242,9 @@
             string description,
             string img16,
             string img32,
-            string fullDescription, 
+            string fullDescription,
             string helpImage,
-            string location, 
+            string location,
             string className,
             string helpUrl)
         {
@@ -290,6 +299,40 @@
             var nearestDelta = lName.Select((c, i) => new { index = i, value = c }).Where(w => w.value == ' ')
                 .OrderBy(x => Math.Abs(x.index - center)).First().index;
             return lName.Substring(0, nearestDelta) + Environment.NewLine + lName.Substring(nearestDelta + 1);
+        }
+
+        /// <summary>
+        /// Проверка, что группа не пуста
+        /// </summary>
+        /// <param name="group">Проверяемая группа</param>
+        /// <returns></returns>
+        private static bool IsAnyFunctionContains(XElement group)
+        {
+            foreach (var item in group.Elements())
+            {
+                if (item.Name == "Function")
+                {
+                    if (LoadFunctionsHelper.LoadedFunctions.Any(x => x.Name.Equals(item.Attribute("Name")?.Value)))
+                    {
+                        return true;
+                    }
+                }
+                else if (item.Name == "StackedPanel")
+                {
+                    foreach (XElement func in item.Elements("Function"))
+                    {
+                        var loadedFunction = LoadFunctionsHelper
+                            .LoadedFunctions.FirstOrDefault(x => x.Name.Equals(func.Attribute("Name")?.Value));
+
+                        if (loadedFunction != null)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }
