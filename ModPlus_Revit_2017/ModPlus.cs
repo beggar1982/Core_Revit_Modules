@@ -21,7 +21,7 @@
         {
             try
             {
-                // inint lang
+                // init lang
                 if (!Language.Initialize()) return Result.Cancelled;
                 // statistic
                 Statistic.SendPluginStarting("Revit", MpVersionData.CurRevitVers);

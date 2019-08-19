@@ -39,6 +39,29 @@
             return $"https://modplus.org/{lang}/help/{functionName.ToLower()}";
         }
 
+        /// <summary>
+        /// Создать вкладку на ленте с указанным именем, если её не существует
+        /// </summary>
+        /// <param name="application">UI Controlled Application</param>
+        /// <param name="tabName">Имя вкладки</param>
+        public static void CreateTabIfNoExist(UIControlledApplication application, string tabName)
+        {
+            var ribbon = Autodesk.Windows.ComponentManager.Ribbon;
+            if (ribbon.Tabs.All(t => t.Name != tabName))
+            {
+                application.CreateRibbonTab(tabName);
+            }
+        }
+
+        /// <summary>
+        /// Создать вкладку ModPlus на ленте, если не существует
+        /// </summary>
+        /// <param name="application">UI Controlled Application</param>
+        public static void CreateModPlusTabIfNoExist(UIControlledApplication application)
+        {
+            CreateTabIfNoExist(application, "ModPlus");
+        }
+
         private static void AddPanels(UIControlledApplication application)
         {
             try
