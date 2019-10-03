@@ -198,14 +198,21 @@
 
         private async void AuthorizationOnStartup()
         {
-            await UserInfoService.GetUserInfoAsync().ConfigureAwait(false);
-            var userInfo = UserInfoService.GetUserInfoResponseFromHash();
-            if (userInfo != null)
+            try
             {
-                if (!userInfo.IsLocalData && !await ModPlusAPI.Web.Connection.HasAllConnectionAsync().ConfigureAwait(false))
+                await UserInfoService.GetUserInfoAsync().ConfigureAwait(false);
+                var userInfo = UserInfoService.GetUserInfoResponseFromHash();
+                if (userInfo != null)
                 {
-                    ModPlusAPI.Variables.UserInfoHash = string.Empty;
+                    if (!userInfo.IsLocalData && !await ModPlusAPI.Web.Connection.HasAllConnectionAsync().ConfigureAwait(false))
+                    {
+                        ModPlusAPI.Variables.UserInfoHash = string.Empty;
+                    }
                 }
+            }
+            catch (Exception exception)
+            {
+                ExceptionBox.Show(exception);
             }
         }
 
