@@ -36,7 +36,13 @@
         public static string GetHelpUrl(string functionName)
         {
             var lang = Language.RusWebLanguages.Contains(Language.CurrentLanguageName) ? "ru" : "en";
-            return $"https://modplus.org/{lang}/help/{functionName.ToLower()}";
+            return $"https://modplus.org/{lang}/revitplugins/{functionName.ToLower()}";
+        }
+
+        public static string GetHelpUrl(string functionName, string section)
+        {
+            var lang = Language.RusWebLanguages.Contains(Language.CurrentLanguageName) ? "ru" : "en";
+            return $"https://modplus.org/{lang}/{section}/{functionName.ToLower()}";
         }
 
         /// <summary>
@@ -205,7 +211,7 @@
                 Assembly.GetExecutingAssembly().Location,
                 "ModPlus_Revit.App.UserInfoCommand");
             userInfoButton.LargeImage = new BitmapImage(new Uri("pack://application:,,,/Modplus_Revit_" + MpVersionData.CurRevitVers + ";component/Resources/UserInfo_32x32.png"));
-            userInfoButton.SetContextualHelp(new ContextualHelp(ContextualHelpType.Url, GetHelpUrl("userinfo")));
+            userInfoButton.SetContextualHelp(new ContextualHelp(ContextualHelpType.Url, GetHelpUrl("userinfo", "help")));
             panel.AddItem(userInfoButton);
 
             // settings
@@ -215,7 +221,7 @@
                 Assembly.GetExecutingAssembly().Location,
                 "ModPlus_Revit.App.MpMainSettingsFunction");
             settingsButton.LargeImage = new BitmapImage(new Uri("pack://application:,,,/Modplus_Revit_" + MpVersionData.CurRevitVers + ";component/Resources/HelpBt.png"));
-            settingsButton.SetContextualHelp(new ContextualHelp(ContextualHelpType.Url, GetHelpUrl("mpsettings")));
+            settingsButton.SetContextualHelp(new ContextualHelp(ContextualHelpType.Url, GetHelpUrl("mpsettings", "help")));
             panel.AddItem(settingsButton);
         }
 
