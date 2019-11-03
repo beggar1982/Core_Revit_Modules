@@ -45,6 +45,12 @@
             return $"https://modplus.org/{lang}/{section}/{functionName.ToLower()}";
         }
 
+        public static string GetHelpUrl()
+        {
+            var lang = Language.RusWebLanguages.Contains(Language.CurrentLanguageName) ? "ru" : "en";
+            return $"https://modplus.org/{lang}/revitplugins";
+        }
+
         /// <summary>
         /// Создать вкладку на ленте с указанным именем, если её не существует
         /// </summary>
@@ -114,11 +120,11 @@
                                         );
                                         // add top function
                                         var firstButton = CreatePushButtonData(loadedFunction);
-                                        var help = firstButton.GetContextualHelp();
-                                        splitButtonData.SetContextualHelp(help);
+                                        //var help = firstButton.GetContextualHelp();
+                                        //splitButtonData.SetContextualHelp(help);
                                         SplitButton sb = (SplitButton)panel.AddItem(splitButtonData);
                                         sb.AddPushButton(firstButton);
-                                        sb.SetContextualHelp(help);
+                                        sb.SetContextualHelp(new ContextualHelp(ContextualHelpType.Url, GetHelpUrl()));
 
                                         // Затем добавляем подфункции
                                         foreach (var subFunc in func.Elements("SubFunction"))
@@ -130,17 +136,17 @@
                                                 continue;
                                             sb.AddPushButton(CreatePushButtonData(
                                                 loadedSubFunction.Name,
-                                                Language.GetFunctionLocalName(loadedFunction.Name,
-                                                    loadedFunction.LName),
-                                                Language.GetFunctionShortDescrition(loadedFunction.Name,
-                                                    loadedFunction.Description),
+                                                Language.GetFunctionLocalName(loadedSubFunction.Name,
+                                                    loadedSubFunction.LName),
+                                                Language.GetFunctionShortDescrition(loadedSubFunction.Name,
+                                                    loadedSubFunction.Description),
                                                 loadedSubFunction.SmallIconUrl,
                                                 loadedSubFunction.BigIconUrl,
-                                                Language.GetFunctionFullDescription(loadedFunction.Name,
-                                                    loadedFunction.FullDescription),
+                                                Language.GetFunctionFullDescription(loadedSubFunction.Name,
+                                                    loadedSubFunction.FullDescription),
                                                 loadedSubFunction.ToolTipHelpImage,
                                                 loadedSubFunction.Location, loadedSubFunction.ClassName,
-                                                GetHelpUrl(loadedFunction.Name)
+                                                GetHelpUrl(loadedSubFunction.Name)
                                             ));
                                         }
                                     }
@@ -172,7 +178,7 @@
                             }
                             else if (item.Name == "StackedPanel")
                             {
-                                List<RibbonItemData> stackedItems = new List<RibbonItemData>();
+                                var stackedItems = new List<RibbonItemData>();
 
                                 foreach (XElement func in item.Elements("Function"))
                                 {
@@ -348,7 +354,7 @@
                 }
                 else if (item.Name == "StackedPanel")
                 {
-                    foreach (XElement func in item.Elements("Function"))
+                    foreach (var func in item.Elements("Function"))
                     {
                         var loadedFunction = LoadFunctionsHelper
                             .LoadedFunctions.FirstOrDefault(x => x.Name.Equals(func.Attribute("Name")?.Value));
