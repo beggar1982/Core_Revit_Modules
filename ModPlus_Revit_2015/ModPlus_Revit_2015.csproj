@@ -39,6 +39,9 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>$(SolutionDir)\ModPlus.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AdWindows">
       <HintPath>C:\_Revit dlls\2015\AdWindows.dll</HintPath>
@@ -91,8 +94,8 @@
     <Compile Include="..\ModPlus_Revit_2017\App\UserInfoCommand.cs">
       <Link>App\UserInfoCommand.cs</Link>
     </Compile>
-    <Compile Include="..\ModPlus_Revit_2017\Helpers\LoadFunctionsHelper.cs">
-      <Link>Helpers\LoadFunctionsHelper.cs</Link>
+    <Compile Include="..\ModPlus_Revit_2017\Helpers\LoadPluginsUtils.cs">
+      <Link>Helpers\LoadPluginsUtils.cs</Link>
     </Compile>
     <Compile Include="..\ModPlus_Revit_2017\ModPlus.cs">
       <Link>ModPlus.cs</Link>
@@ -130,6 +133,13 @@
     <Resource Include="Resources\Flags\en-US.png" />
     <Resource Include="Resources\Flags\ru-RU.png" />
     <Resource Include="Resources\Flags\uk-UA.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.118\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.118\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

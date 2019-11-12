@@ -1,17 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using ModPlusAPI.Interfaces;
-
-/* Функция из файла конфигурации читаю в том виде, в каком они там сохранены
+﻿/* Функция из файла конфигурации читаю в том виде, в каком они там сохранены
  * А вот получение локализованных значений (имя, описание, полное описание)
  * происходит при построении ленты */
 
 namespace ModPlus_Revit.Helpers
 {
-    public static class LoadFunctionsHelper
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
+    using ModPlusAPI.Interfaces;
+
+    /// <summary>
+    /// Вспомогательные методы загрузки плагинов
+    /// </summary>
+    public static class LoadPluginsUtils
     {
         /// <summary>
         /// Список загруженных файлов в виде специального класса для последующего использования при построения ленты и меню
@@ -41,7 +44,7 @@ namespace ModPlus_Revit.Helpers
                             BigIconUrl = "pack://application:,,,/" + loadedFuncAssembly.GetName().FullName +
                                          ";component/Resources/" + function.Name +
                                          "_32x32.png",
-                            AvailProductExternalVersion = MpVersionData.CurRevitVers,
+                            AvailProductExternalVersion = MpVersionData.CurrentRevitVersion,
                             FullDescription = function.FullDescription,
                             ToolTipHelpImage = !string.IsNullOrEmpty(function.ToolTipHelpImage)
                             ? "pack://application:,,,/" + loadedFuncAssembly.GetName().FullName + ";component/Resources/Help/" + function.ToolTipHelpImage
@@ -57,6 +60,7 @@ namespace ModPlus_Revit.Helpers
                             Location = fileName
                         };
                         if (function.SubFunctionsNames != null)
+                        {
                             foreach (var subFunctionsName in function.SubFunctionsNames)
                             {
                                 lf.SubSmallIconsUrl.Add("pack://application:,,,/" + loadedFuncAssembly.GetName().FullName +
@@ -66,7 +70,10 @@ namespace ModPlus_Revit.Helpers
                                                       ";component/Resources/" + subFunctionsName +
                                                       "_32x32.png");
                             }
+                        }
+
                         if (function.SubHelpImages != null)
+                        {
                             foreach (var helpImage in function.SubHelpImages)
                             {
                                 lf.SubHelpImages.Add(
@@ -75,15 +82,20 @@ namespace ModPlus_Revit.Helpers
                                     : string.Empty
                                 );
                             }
+                        }
+
                         LoadedFunctions.Add(lf);
                     }
+
                     break;
                 }
             }
         }
+
         private static IEnumerable<Type> GetLoadableTypes(Assembly assembly)
         {
-            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+            if (assembly == null)
+                throw new ArgumentNullException(nameof(assembly));
             try
             {
                 return assembly.GetTypes();
@@ -97,27 +109,29 @@ namespace ModPlus_Revit.Helpers
         /// <summary>
         /// Поиск файла функции, если в файле конфигурации вдруг нет атрибута
         /// </summary>
-        /// <param name="functionName"></param>
+        /// <param name="pluginName">Plugin uniq name</param>
         /// <returns></returns>
-        public static string FindFile(string functionName)
+        public static string FindFile(string pluginName)
         {
             var fileName = string.Empty;
-            var funcDir = Path.Combine(ModPlusAPI.Constants.CurrentDirectory, "Functions", "Revit", functionName);
+            var funcDir = Path.Combine(ModPlusAPI.Constants.CurrentDirectory, "Functions", "Revit", pluginName);
             if (Directory.Exists(funcDir))
             {
                 foreach (var file in Directory.GetFiles(funcDir, "*.dll", SearchOption.TopDirectoryOnly))
                 {
                     var fileInfo = new FileInfo(file);
-                    if (fileInfo.Name.Equals(functionName + "_" + MpVersionData.CurRevitVers + ".dll"))
+                    if (fileInfo.Name.Equals(pluginName + "_" + MpVersionData.CurrentRevitVersion + ".dll"))
                     {
                         fileName = file;
                         break;
                     }
                 }
             }
+
             return fileName;
         }
     }
+
     public class LoadedFunction
     {
         public string Location { get; set; }

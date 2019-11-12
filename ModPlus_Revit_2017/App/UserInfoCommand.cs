@@ -5,9 +5,11 @@
     using Autodesk.Revit.UI;
     using ModPlusAPI.Windows;
 
+    /// <inheritdoc />
     [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
     public class UserInfoCommand : IExternalCommand
     {
+        /// <inheritdoc />
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             try

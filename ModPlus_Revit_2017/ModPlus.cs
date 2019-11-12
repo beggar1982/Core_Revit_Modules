@@ -1,45 +1,54 @@
 ﻿namespace ModPlus_Revit
 {
-    using System.Net;
-    using System.Xml.Linq;
-    using ModPlusAPI.LicenseServer;
-    using ModPlusAPI.UserInfo;
     using System;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Net;
     using System.Reflection;
+    using System.Xml.Linq;
     using Autodesk.Revit.UI;
+    using Helpers;
     using Microsoft.Win32;
     using ModPlusAPI;
+    using ModPlusAPI.LicenseServer;
+    using ModPlusAPI.UserInfo;
     using ModPlusAPI.Windows;
-    using ModPlus_Revit.Helpers;
 
+    /// <inheritdoc />
     public class ModPlus : IExternalApplication
     {
+        /// <inheritdoc />
         public Result OnStartup(UIControlledApplication application)
         {
             try
             {
                 // init lang
-                if (!Language.Initialize()) return Result.Cancelled;
+                if (!Language.Initialize())
+                    return Result.Cancelled;
+
                 // statistic
-                Statistic.SendPluginStarting("Revit", MpVersionData.CurRevitVers);
+                Statistic.SendPluginStarting("Revit", MpVersionData.CurrentRevitVersion);
+
                 // Принудительная загрузка сборок
                 LoadAssemblies();
                 UserConfigFile.InitConfigFile();
                 LoadFunctions();
+
                 // check adaptation
                 CheckAdaptation();
 
                 // Load ribbon
                 App.RibbonBuilder.CreateRibbon(application);
+
                 // проверка загруженности модуля автообновления
                 CheckAutoUpdaterLoaded();
 
                 var disableConnectionWithLicenseServer =
-                    bool.TryParse(UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.Settings,
-                        "DisableConnectionWithLicenseServerInRevit"), out var b) && b; // false
+                    bool.TryParse(
+                        UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.Settings, "DisableConnectionWithLicenseServerInRevit"),
+                        out var b) && b; // false
+
                 // start license server client
                 if (!disableConnectionWithLicenseServer)
                     ClientStarter.StartConnection(ProductLicenseType.Revit);
@@ -58,6 +67,7 @@
             }
         }
 
+        /// <inheritdoc />
         public Result OnShutdown(UIControlledApplication application)
         {
             ClientStarter.StopConnection();
@@ -91,26 +101,34 @@
             try
             {
                 var funtionsKey = Registry.CurrentUser.OpenSubKey("ModPlus\\Functions");
-                if (funtionsKey == null) return;
+                if (funtionsKey == null)
+                    return;
                 using (funtionsKey)
                 {
                     foreach (var functionKeyName in funtionsKey.GetSubKeyNames())
                     {
                         var functionKey = funtionsKey.OpenSubKey(functionKeyName);
-                        if (functionKey == null) continue;
+                        if (functionKey == null)
+                            continue;
                         foreach (var availPrVersKeyName in functionKey.GetSubKeyNames())
                         {
                             // Если версия продукта не совпадает, то пропускаю
-                            if (!availPrVersKeyName.Equals(MpVersionData.CurRevitVers)) continue;
+                            if (!availPrVersKeyName.Equals(MpVersionData.CurrentRevitVersion))
+                                continue;
                             var availPrVersKey = functionKey.OpenSubKey(availPrVersKeyName);
-                            if (availPrVersKey == null) continue;
+                            if (availPrVersKey == null)
+                                continue;
+
                             // беру свойства функции из реестра
                             var file = availPrVersKey.GetValue("File") as string;
                             var onOff = availPrVersKey.GetValue("OnOff") as string;
                             var productFor = availPrVersKey.GetValue("ProductFor") as string;
-                            if (string.IsNullOrEmpty(onOff) || string.IsNullOrEmpty(productFor)) continue;
-                            if (!productFor.Equals("Revit")) continue;
+                            if (string.IsNullOrEmpty(onOff) || string.IsNullOrEmpty(productFor))
+                                continue;
+                            if (!productFor.Equals("Revit"))
+                                continue;
                             var isOn = !bool.TryParse(onOff, out var b) || b; // default - true
+
                             // Если "Продукт для" подходит, файл существует и функция включена - гружу
                             if (isOn)
                             {
@@ -118,15 +136,15 @@
                                 {
                                     // load
                                     var localFuncAssembly = Assembly.LoadFrom(file);
-                                    LoadFunctionsHelper.GetDataFromFunctionInterface(localFuncAssembly, file);
+                                    LoadPluginsUtils.GetDataFromFunctionInterface(localFuncAssembly, file);
                                 }
                                 else
                                 {
-                                    var findedFile = LoadFunctionsHelper.FindFile(functionKeyName);
+                                    var findedFile = LoadPluginsUtils.FindFile(functionKeyName);
                                     if (!string.IsNullOrEmpty(findedFile) && File.Exists(findedFile))
                                     {
                                         var localFuncAssembly = Assembly.LoadFrom(findedFile);
-                                        LoadFunctionsHelper.GetDataFromFunctionInterface(localFuncAssembly, findedFile);
+                                        LoadPluginsUtils.GetDataFromFunctionInterface(localFuncAssembly, findedFile);
                                     }
                                 }
                             }
@@ -191,6 +209,7 @@
                     }
                     catch
                     {
+                        // ignored
                     }
                 }
             }
@@ -220,7 +239,7 @@
         {
             protected override WebRequest GetWebRequest(Uri uri)
             {
-                WebRequest w = base.GetWebRequest(uri);
+                var w = base.GetWebRequest(uri);
                 w.Timeout = 3000;
                 return w;
             }

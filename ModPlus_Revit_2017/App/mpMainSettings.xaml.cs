@@ -79,7 +79,7 @@
 
             MiTheme.SelectedItem = pluginStyle;
         }
-        
+
         // Загрузка данных из файла конфигурации
         // которые требуется отобразить в окне
         private void LoadSettingsFromConfigFileAndRegistry()
@@ -88,16 +88,19 @@
             var separator = Regestry.GetValue("Separator");
             CbSeparatorSettings.SelectedIndex = string.IsNullOrEmpty(separator) ? 0 : int.Parse(separator);
             ChkDisableConnectionWithLicenseServer.IsChecked =
-                bool.TryParse(UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.Settings, "DisableConnectionWithLicenseServerInRevit"), out var b) && b; // false
+                bool.TryParse(
+                    UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.Settings, "DisableConnectionWithLicenseServerInRevit"),
+                    out var b) && b; // false
             TbLocalLicenseServerIpAddress.Text = Regestry.GetValue("LocalLicenseServerIpAddress");
             TbLocalLicenseServerPort.Value = int.TryParse(Regestry.GetValue("LocalLicenseServerPort"), out var i) ? i : 0;
         }
-        
+
         // Выбор разделителя целой и дробной части для чисел
         private void CbSeparatorSettings_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Regestry.SetValue("Separator", ((ComboBox)sender).SelectedIndex.ToString(CultureInfo.InvariantCulture));
         }
+
         // Выбор темы
         private void MiTheme_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -105,18 +108,18 @@
             Regestry.SetValue("PluginStyle", theme.Name);
             ModPlusStyle.ThemeManager.ChangeTheme(this, theme);
         }
-        
+
         private void MpMainSettings_OnClosed(object sender, EventArgs e)
         {
             try
             {
                 // Так как эти значения хранятся в переменных, то их нужно перезаписать
                 Regestry.SetValue("Separator", CbSeparatorSettings.SelectedIndex.ToString(CultureInfo.InvariantCulture));
-                
+
                 // License server
                 UserConfigFile.SetValue(UserConfigFile.ConfigFileZone.Settings, "DisableConnectionWithLicenseServerInRevit",
-                    // ReSharper disable once PossibleInvalidOperationException
-                    ChkDisableConnectionWithLicenseServer.IsChecked.Value.ToString(), true);
+                //// ReSharper disable once PossibleInvalidOperationException
+                ChkDisableConnectionWithLicenseServer.IsChecked.Value.ToString(), true);
                 Regestry.SetValue("LocalLicenseServerIpAddress", TbLocalLicenseServerIpAddress.Text);
                 Regestry.SetValue("LocalLicenseServerPort", TbLocalLicenseServerPort.Value.ToString());
 
@@ -131,9 +134,8 @@
             {
                 ExceptionBox.Show(ex);
             }
-
         }
-        
+
         private async void BtCheckLocalLicenseServerConnection_OnClick(object sender, RoutedEventArgs e)
         {
             // ReSharper disable once AsyncConverter.AsyncAwaitMayBeElidedHighlighting
@@ -181,11 +183,12 @@
                         ? Visibility.Collapsed
                         : Visibility.Visible;
                 }
+
                 try
                 {
                     BitmapImage bi = new BitmapImage();
                     bi.BeginInit();
-                    bi.UriSource = new Uri($"pack://application:,,,/ModPlus_Revit_{MpVersionData.CurRevitVers};component/Resources/Flags/{li.Name}.png");
+                    bi.UriSource = new Uri($"pack://application:,,,/ModPlus_Revit_{MpVersionData.CurrentRevitVersion};component/Resources/Flags/{li.Name}.png");
                     bi.EndInit();
                     LanguageImage.Source = bi;
                 }

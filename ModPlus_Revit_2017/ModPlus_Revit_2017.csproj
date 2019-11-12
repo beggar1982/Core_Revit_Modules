@@ -42,6 +42,9 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>$(SolutionDir)\ModPlus.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AdWindows">
       <HintPath>C:\_Revit dlls\2017\AdWindows.dll</HintPath>
@@ -94,7 +97,7 @@
     </Compile>
     <Compile Include="App\RibbonBuilder.cs" />
     <Compile Include="App\UserInfoCommand.cs" />
-    <Compile Include="Helpers\LoadFunctionsHelper.cs" />
+    <Compile Include="Helpers\LoadPluginsUtils.cs" />
     <Compile Include="ModPlus.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +142,13 @@
     <Resource Include="..\modplus_revit_2015\resources\flags\uk-UA.png">
       <Link>Resources\Flags\uk-UA.png</Link>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.118\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.118\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
