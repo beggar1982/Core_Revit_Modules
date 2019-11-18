@@ -219,13 +219,13 @@
         {
             try
             {
-                await UserInfoService.GetUserInfoAsync().ConfigureAwait(false);
+                await UserInfoService.GetUserInfoAsync();
                 var userInfo = UserInfoService.GetUserInfoResponseFromHash();
                 if (userInfo != null)
                 {
-                    if (!userInfo.IsLocalData && !await ModPlusAPI.Web.Connection.HasAllConnectionAsync(3).ConfigureAwait(false))
+                    if (!userInfo.IsLocalData && !await ModPlusAPI.Web.Connection.HasAllConnectionAsync(3))
                     {
-                        ModPlusAPI.Variables.UserInfoHash = string.Empty;
+                        Variables.UserInfoHash = string.Empty;
                     }
                 }
             }
