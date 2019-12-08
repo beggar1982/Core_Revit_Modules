@@ -7,9 +7,11 @@
     using System.Windows.Media.Imaging;
     using System.Xml.Linq;
     using Autodesk.Revit.UI;
+    using Autodesk.Windows;
+    using Helpers;
     using ModPlusAPI;
     using ModPlusAPI.Windows;
-    using Helpers;
+    using RibbonPanel = Autodesk.Revit.UI.RibbonPanel;
 
     public static class RibbonBuilder
     {
@@ -71,7 +73,46 @@
         /// <param name="application">UI Controlled Application</param>
         public static void CreateModPlusTabIfNoExist(UIControlledApplication application)
         {
-            CreateTabIfNoExist(application, "ModPlus");
+            CreateTabIfNoExist(application, _tabName);
+        }
+
+        /// <summary>
+        /// Убрать текст с кнопок маленького размера, расположенных в StackedPanel
+        /// </summary>
+        /// <param name="tabName">Имя вкладки, в которой выполнить поиск</param>
+        /// <param name="pluginsToHideText">Коллекция имен плагинов</param>
+        private static void HideTextOfSmallButtons(string tabName, ICollection<string> pluginsToHideText)
+        {
+            try
+            {
+                var ribbon = ComponentManager.Ribbon;
+                foreach (var ribbonTab in ribbon.Tabs)
+                {
+                    if (ribbonTab.Name != tabName)
+                        continue;
+
+                    foreach (var ribbonTabPanel in ribbonTab.Panels)
+                    {
+                        foreach (var sourceItem in ribbonTabPanel.Source.Items)
+                        {
+                            if (!(sourceItem is RibbonRowPanel ribbonRowPanel))
+                                continue;
+
+                            foreach (var ribbonItem in ribbonRowPanel.Items)
+                            {
+                                var pluginName = ribbonItem.Id.Split('%').LastOrDefault();
+                                if (pluginsToHideText.Contains(pluginName) &&
+                                    ribbonItem.Size == RibbonItemSize.Standard)
+                                    ribbonItem.ShowText = false;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                ExceptionBox.Show(exception);
+            }
         }
 
         private static void AddPanels(UIControlledApplication application)
@@ -79,6 +120,7 @@
             try
             {
                 var confCuiXel = ModPlusAPI.RegistryData.Adaptation.GetCuiAsXElement("Revit");
+                var pluginsToHide = new List<string>();
 
                 // Проходим по группам
                 if (confCuiXel != null)
@@ -189,6 +231,7 @@
                                     if (loadedFunction == null)
                                         continue;
 
+                                    pluginsToHide.Add(loadedFunction.Name);
                                     stackedItems.Add(CreatePushButtonData(loadedFunction));
                                 }
 
@@ -200,6 +243,8 @@
                         }
                     }
                 }
+
+                HideTextOfSmallButtons(_tabName, pluginsToHide);
             }
             catch (Exception exception)
             {
@@ -218,7 +263,7 @@
                 ConvertLName(Language.GetItem(_langItem, "h13")),
                 Assembly.GetExecutingAssembly().Location,
                 "ModPlus_Revit.App.UserInfoCommand");
-            userInfoButton.LargeImage = 
+            userInfoButton.LargeImage =
                 new BitmapImage(
                     new Uri("pack://application:,,,/Modplus_Revit_" + MpVersionData.CurrentRevitVersion + ";" +
                             "component/Resources/UserInfo_32x32.png"));
@@ -231,14 +276,14 @@
                 Language.GetItem(_langItem, "h12"),
                 Assembly.GetExecutingAssembly().Location,
                 "ModPlus_Revit.App.MpMainSettingsFunction");
-            settingsButton.LargeImage = 
+            settingsButton.LargeImage =
                 new BitmapImage(
                     new Uri("pack://application:,,,/Modplus_Revit_" + MpVersionData.CurrentRevitVersion + ";" +
                             "component/Resources/HelpBt.png"));
             settingsButton.SetContextualHelp(new ContextualHelp(ContextualHelpType.Url, GetHelpUrl("mpsettings", "help")));
             panel.AddItem(settingsButton);
         }
-        
+
         private static void AddPushButton(RibbonPanel panel, LoadedFunction loadedFunction)
         {
             var pushButton = panel.AddItem(CreatePushButtonData(loadedFunction)) as PushButton;
