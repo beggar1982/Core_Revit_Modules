@@ -1,9 +1,10 @@
-﻿namespace ModPlus_Revit
+﻿#pragma warning disable SA1600 // Elements should be documented
+namespace ModPlus_Revit
 {
     /// <summary>
     /// Данные, зависящие от версии
     /// </summary>
-    public class MpVersionData
+    public class VersionData
     {
 #if R2015
         public const string CurrentRevitVersion = "2015";
@@ -20,3 +21,4 @@
 #endif
     }
 }
+#pragma warning restore SA1600 // Elements should be documented

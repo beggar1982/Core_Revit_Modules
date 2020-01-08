@@ -1,4 +1,4 @@
-﻿/* Функция из файла конфигурации читаю в том виде, в каком они там сохранены
+﻿/* Плагины из файла конфигурации читаю в том виде, в каком они там сохранены
  * А вот получение локализованных значений (имя, описание, полное описание)
  * происходит при построении ленты */
 
@@ -26,8 +26,8 @@ namespace ModPlus_Revit.Helpers
             var types = GetLoadableTypes(loadedFuncAssembly);
             foreach (var type in types)
             {
-                var interf = type.GetInterface(typeof(IModPlusFunctionInterface).Name);
-                if (interf != null)
+                var functionInterface = type.GetInterface(typeof(IModPlusFunctionInterface).Name);
+                if (functionInterface != null)
                 {
                     if (Activator.CreateInstance(type) is IModPlusFunctionInterface function)
                     {
@@ -44,7 +44,7 @@ namespace ModPlus_Revit.Helpers
                             BigIconUrl = "pack://application:,,,/" + loadedFuncAssembly.GetName().FullName +
                                          ";component/Resources/" + function.Name +
                                          "_32x32.png",
-                            AvailProductExternalVersion = MpVersionData.CurrentRevitVersion,
+                            AvailProductExternalVersion = VersionData.CurrentRevitVersion,
                             FullDescription = function.FullDescription,
                             ToolTipHelpImage = !string.IsNullOrEmpty(function.ToolTipHelpImage)
                             ? "pack://application:,,,/" + loadedFuncAssembly.GetName().FullName + ";component/Resources/Help/" + function.ToolTipHelpImage
@@ -79,8 +79,7 @@ namespace ModPlus_Revit.Helpers
                                 lf.SubHelpImages.Add(
                                     !string.IsNullOrEmpty(helpImage)
                                     ? "pack://application:,,,/" + loadedFuncAssembly.GetName().FullName + ";component/Resources/Help/" + helpImage
-                                    : string.Empty
-                                );
+                                    : string.Empty);
                             }
                         }
 
@@ -120,7 +119,7 @@ namespace ModPlus_Revit.Helpers
                 foreach (var file in Directory.GetFiles(funcDir, "*.dll", SearchOption.TopDirectoryOnly))
                 {
                     var fileInfo = new FileInfo(file);
-                    if (fileInfo.Name.Equals(pluginName + "_" + MpVersionData.CurrentRevitVersion + ".dll"))
+                    if (fileInfo.Name.Equals(pluginName + "_" + VersionData.CurrentRevitVersion + ".dll"))
                     {
                         fileName = file;
                         break;
@@ -130,28 +129,5 @@ namespace ModPlus_Revit.Helpers
 
             return fileName;
         }
-    }
-
-    public class LoadedFunction
-    {
-        public string Location { get; set; }
-        public string Name { get; set; }
-        public string LName { get; set; }
-        public string AvailProductExternalVersion { get; set; }
-        public string ClassName { get; set; }
-        public string SmallIconUrl { get; set; }
-        public string BigIconUrl { get; set; }
-        public string Description { get; set; }
-        public bool CanAddToRibbon { get; set; }
-        public string FullDescription { get; set; }
-        public string ToolTipHelpImage { get; set; }
-        public List<string> SubFunctionsNames { get; set; }
-        public List<string> SubFunctionsLNames { get; set; }
-        public List<string> SubDescriptions { get; set; }
-        public List<string> SubFullDescriptions { get; set; }
-        public List<string> SubHelpImages { get; set; }
-        public List<string> SubSmallIconsUrl { get; set; }
-        public List<string> SubBigIconsUrl { get; set; }
-        public List<string> SubClassNames { get; set; }
     }
 }

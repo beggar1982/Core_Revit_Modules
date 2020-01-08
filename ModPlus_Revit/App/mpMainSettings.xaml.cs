@@ -15,6 +15,7 @@
     {
         private const string LangItem = "RevitDlls";
         private Language.LangItem _curLangItem;
+        private bool _restartClientOnClose = true;
 
         public MpMainSettings()
         {
@@ -147,8 +148,6 @@
                 TbLocalLicenseServerIpAddress.Text + ":" + TbLocalLicenseServerPort.Value).ConfigureAwait(true);
         }
 
-        private bool _restartClientOnClose = true;
-
         private void BtStopConnectionToLicenseServer_OnClick(object sender, RoutedEventArgs e)
         {
             ClientStarter.StopConnection();
@@ -188,7 +187,7 @@
                 {
                     BitmapImage bi = new BitmapImage();
                     bi.BeginInit();
-                    bi.UriSource = new Uri($"pack://application:,,,/ModPlus_Revit_{MpVersionData.CurrentRevitVersion};component/Resources/Flags/{li.Name}.png");
+                    bi.UriSource = new Uri($"pack://application:,,,/ModPlus_Revit_{VersionData.CurrentRevitVersion};component/Resources/Flags/{li.Name}.png");
                     bi.EndInit();
                     LanguageImage.Source = bi;
                 }

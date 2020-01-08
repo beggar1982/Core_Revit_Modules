@@ -28,7 +28,7 @@
                     return Result.Cancelled;
 
                 // statistic
-                Statistic.SendPluginStarting("Revit", MpVersionData.CurrentRevitVersion);
+                Statistic.SendPluginStarting("Revit", VersionData.CurrentRevitVersion);
 
                 // Принудительная загрузка сборок
                 LoadAssemblies();
@@ -100,29 +100,29 @@
         {
             try
             {
-                var funtionsKey = Registry.CurrentUser.OpenSubKey("ModPlus\\Functions");
-                if (funtionsKey == null)
+                var functionsKey = Registry.CurrentUser.OpenSubKey("ModPlus\\Functions");
+                if (functionsKey == null)
                     return;
-                using (funtionsKey)
+                using (functionsKey)
                 {
-                    foreach (var functionKeyName in funtionsKey.GetSubKeyNames())
+                    foreach (var functionKeyName in functionsKey.GetSubKeyNames())
                     {
-                        var functionKey = funtionsKey.OpenSubKey(functionKeyName);
+                        var functionKey = functionsKey.OpenSubKey(functionKeyName);
                         if (functionKey == null)
                             continue;
-                        foreach (var availPrVersKeyName in functionKey.GetSubKeyNames())
+                        foreach (var availProductVersionKeyName in functionKey.GetSubKeyNames())
                         {
                             // Если версия продукта не совпадает, то пропускаю
-                            if (!availPrVersKeyName.Equals(MpVersionData.CurrentRevitVersion))
+                            if (!availProductVersionKeyName.Equals(VersionData.CurrentRevitVersion))
                                 continue;
-                            var availPrVersKey = functionKey.OpenSubKey(availPrVersKeyName);
-                            if (availPrVersKey == null)
+                            var availProductVersionKey = functionKey.OpenSubKey(availProductVersionKeyName);
+                            if (availProductVersionKey == null)
                                 continue;
 
                             // беру свойства функции из реестра
-                            var file = availPrVersKey.GetValue("File") as string;
-                            var onOff = availPrVersKey.GetValue("OnOff") as string;
-                            var productFor = availPrVersKey.GetValue("ProductFor") as string;
+                            var file = availProductVersionKey.GetValue("File") as string;
+                            var onOff = availProductVersionKey.GetValue("OnOff") as string;
+                            var productFor = availProductVersionKey.GetValue("ProductFor") as string;
                             if (string.IsNullOrEmpty(onOff) || string.IsNullOrEmpty(productFor))
                                 continue;
                             if (!productFor.Equals("Revit"))
@@ -140,11 +140,11 @@
                                 }
                                 else
                                 {
-                                    var findedFile = LoadPluginsUtils.FindFile(functionKeyName);
-                                    if (!string.IsNullOrEmpty(findedFile) && File.Exists(findedFile))
+                                    var foundedFile = LoadPluginsUtils.FindFile(functionKeyName);
+                                    if (!string.IsNullOrEmpty(foundedFile) && File.Exists(foundedFile))
                                     {
-                                        var localFuncAssembly = Assembly.LoadFrom(findedFile);
-                                        LoadPluginsUtils.GetDataFromFunctionInterface(localFuncAssembly, findedFile);
+                                        var localFuncAssembly = Assembly.LoadFrom(foundedFile);
+                                        LoadPluginsUtils.GetDataFromFunctionInterface(localFuncAssembly, foundedFile);
                                     }
                                 }
                             }
@@ -235,11 +235,16 @@
             }
         }
 
+        /// <summary>
+        /// <see cref="WebClient"/> wrapper
+        /// </summary>
         internal class WebClientWithTimeout : WebClient
         {
+            /// <inheritdoc/>
             protected override WebRequest GetWebRequest(Uri uri)
             {
                 var w = base.GetWebRequest(uri);
+                // ReSharper disable once PossibleNullReferenceException
                 w.Timeout = 3000;
                 return w;
             }

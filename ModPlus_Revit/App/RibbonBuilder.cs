@@ -35,18 +35,30 @@
             }
         }
 
+        /// <summary>
+        /// Возвращает url справки для плагина
+        /// </summary>
+        /// <param name="functionName">Имя плагина</param>
         public static string GetHelpUrl(string functionName)
         {
             var lang = Language.RusWebLanguages.Contains(Language.CurrentLanguageName) ? "ru" : "en";
             return $"https://modplus.org/{lang}/revitplugins/{functionName.ToLower()}";
         }
 
+        /// <summary>
+        /// Возвращает url справки для плагина
+        /// </summary>
+        /// <param name="functionName">Имя плагина</param>
+        /// <param name="section">Раздел</param>
         public static string GetHelpUrl(string functionName, string section)
         {
             var lang = Language.RusWebLanguages.Contains(Language.CurrentLanguageName) ? "ru" : "en";
             return $"https://modplus.org/{lang}/{section}/{functionName.ToLower()}";
         }
 
+        /// <summary>
+        /// Возвращает url справки для всех плагинов
+        /// </summary>
         public static string GetHelpUrl()
         {
             var lang = Language.RusWebLanguages.Contains(Language.CurrentLanguageName) ? "ru" : "en";
@@ -60,7 +72,7 @@
         /// <param name="tabName">Имя вкладки</param>
         public static void CreateTabIfNoExist(UIControlledApplication application, string tabName)
         {
-            var ribbon = Autodesk.Windows.ComponentManager.Ribbon;
+            var ribbon = ComponentManager.Ribbon;
             if (ribbon.Tabs.All(t => t.Name != tabName))
             {
                 application.CreateRibbonTab(tabName);
@@ -81,7 +93,7 @@
         /// </summary>
         /// <param name="tabName">Имя вкладки, в которой выполнить поиск</param>
         /// <param name="pluginsToHideText">Коллекция имен плагинов</param>
-        private static void HideTextOfSmallButtons(string tabName, ICollection<string> pluginsToHideText)
+        public static void HideTextOfSmallButtons(string tabName, ICollection<string> pluginsToHideText)
         {
             try
             {
@@ -113,6 +125,27 @@
             {
                 ExceptionBox.Show(exception);
             }
+        }
+
+        /// <summary>
+        /// Конвертирование локализованного имени плагина: разбивка на две строки примерно по середине
+        /// </summary>
+        /// <param name="lName">Локализованное имя плагина</param>
+        public static string ConvertLName(string lName)
+        {
+            if (!lName.Contains(" "))
+                return lName;
+            if (lName.Length <= 8)
+                return lName;
+            if (lName.Count(x => x == ' ') == 1)
+            {
+                return lName.Split(' ')[0] + Environment.NewLine + lName.Split(' ')[1];
+            }
+
+            var center = lName.Length * 0.5;
+            var nearestDelta = lName.Select((c, i) => new { index = i, value = c }).Where(w => w.value == ' ')
+                .OrderBy(x => Math.Abs(x.index - center)).First().index;
+            return lName.Substring(0, nearestDelta) + Environment.NewLine + lName.Substring(nearestDelta + 1);
         }
 
         private static void AddPanels(UIControlledApplication application)
@@ -180,7 +213,7 @@
                                                 Language.GetFunctionLocalName(
                                                     loadedSubFunction.Name,
                                                     loadedSubFunction.LName),
-                                                Language.GetFunctionShortDescrition(
+                                                Language.GetFunctionShortDescription(
                                                     loadedSubFunction.Name,
                                                     loadedSubFunction.Description),
                                                 loadedSubFunction.SmallIconUrl,
@@ -265,7 +298,7 @@
                 "ModPlus_Revit.App.UserInfoCommand");
             userInfoButton.LargeImage =
                 new BitmapImage(
-                    new Uri("pack://application:,,,/Modplus_Revit_" + MpVersionData.CurrentRevitVersion + ";" +
+                    new Uri("pack://application:,,,/Modplus_Revit_" + VersionData.CurrentRevitVersion + ";" +
                             "component/Resources/UserInfo_32x32.png"));
             userInfoButton.SetContextualHelp(new ContextualHelp(ContextualHelpType.Url, GetHelpUrl("userinfo", "help")));
             panel.AddItem(userInfoButton);
@@ -278,7 +311,7 @@
                 "ModPlus_Revit.App.MpMainSettingsFunction");
             settingsButton.LargeImage =
                 new BitmapImage(
-                    new Uri("pack://application:,,,/Modplus_Revit_" + MpVersionData.CurrentRevitVersion + ";" +
+                    new Uri("pack://application:,,,/Modplus_Revit_" + VersionData.CurrentRevitVersion + ";" +
                             "component/Resources/HelpBt.png"));
             settingsButton.SetContextualHelp(new ContextualHelp(ContextualHelpType.Url, GetHelpUrl("mpsettings", "help")));
             panel.AddItem(settingsButton);
@@ -286,7 +319,8 @@
 
         private static void AddPushButton(RibbonPanel panel, LoadedFunction loadedFunction)
         {
-            var pushButton = panel.AddItem(CreatePushButtonData(loadedFunction)) as PushButton;
+            // ReSharper disable once AssignmentIsFullyDiscarded
+            _ = panel.AddItem(CreatePushButtonData(loadedFunction)) as PushButton;
         }
 
         private static PushButtonData CreatePushButtonData(LoadedFunction loadedFunction)
@@ -294,14 +328,10 @@
             return CreatePushButtonData(
                 loadedFunction.Name,
                 Language.GetFunctionLocalName(loadedFunction.Name, loadedFunction.LName),
-                Language.GetFunctionShortDescrition(
-                    loadedFunction.Name,
-                    loadedFunction.Description),
+                Language.GetFunctionShortDescription(loadedFunction.Name, loadedFunction.Description),
                 loadedFunction.SmallIconUrl,
                 loadedFunction.BigIconUrl,
-                Language.GetFunctionFullDescription(
-                    loadedFunction.Name,
-                    loadedFunction.FullDescription),
+                Language.GetFunctionFullDescription(loadedFunction.Name, loadedFunction.FullDescription),
                 loadedFunction.ToolTipHelpImage, loadedFunction.Location,
                 loadedFunction.ClassName,
                 GetHelpUrl(loadedFunction.Name));
@@ -314,7 +344,7 @@
                     Language.GetFunctionLocalName(
                         loadedFunction.Name,
                         loadedFunction.SubFunctionsLNames[i], i + 1),
-                    Language.GetFunctionShortDescrition(
+                    Language.GetFunctionShortDescription(
                         loadedFunction.Name,
                         loadedFunction.SubDescriptions[i], i + 1),
                     loadedFunction.SubSmallIconsUrl[i], loadedFunction.SubBigIconsUrl[i],
@@ -379,24 +409,7 @@
                 pshBtn.SetContextualHelp(new ContextualHelp(ContextualHelpType.Url, helpUrl));
             return pshBtn;
         }
-
-        private static string ConvertLName(string lName)
-        {
-            if (!lName.Contains(" "))
-                return lName;
-            if (lName.Length <= 8)
-                return lName;
-            if (lName.Count(x => x == ' ') == 1)
-            {
-                return lName.Split(' ')[0] + Environment.NewLine + lName.Split(' ')[1];
-            }
-
-            var center = lName.Length * 0.5;
-            var nearestDelta = lName.Select((c, i) => new { index = i, value = c }).Where(w => w.value == ' ')
-                .OrderBy(x => Math.Abs(x.index - center)).First().index;
-            return lName.Substring(0, nearestDelta) + Environment.NewLine + lName.Substring(nearestDelta + 1);
-        }
-
+        
         /// <summary>
         /// Проверка, что группа не пуста
         /// </summary>
