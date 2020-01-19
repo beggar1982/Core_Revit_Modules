@@ -123,7 +123,7 @@
             }
             catch (Exception exception)
             {
-                ExceptionBox.Show(exception);
+                Statistic.SendException(exception);
             }
         }
 
