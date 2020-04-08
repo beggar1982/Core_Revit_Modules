@@ -15,6 +15,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("2019")]
 #elif R2020
 [assembly: AssemblyDescription("2020")]
+#elif R2021
+[assembly: AssemblyDescription("2021")]
 #endif
 [assembly: AssemblyCompany("modplus.org")]
 [assembly: AssemblyProduct("ModPlus")]
@@ -22,5 +24,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("4.2.3.0")]
-[assembly: AssemblyFileVersion("4.2.3.0")]
+[assembly: AssemblyVersion("4.3.0.0")]
+[assembly: AssemblyFileVersion("4.3.0.0")]

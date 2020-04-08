@@ -15,14 +15,14 @@
 
     public static class RibbonBuilder
     {
-        private static string _tabName = "ModPlus";
-        private static string _langItem = "RevitDlls";
+        private const string TabName = "ModPlus";
+        private const string LangItem = "RevitDlls";
 
         public static void CreateRibbon(UIControlledApplication application)
         {
             try
             {
-                application.CreateRibbonTab(_tabName);
+                application.CreateRibbonTab(TabName);
 
                 // create and fill panels
                 AddPanels(application);
@@ -85,7 +85,7 @@
         /// <param name="application">UI Controlled Application</param>
         public static void CreateModPlusTabIfNoExist(UIControlledApplication application)
         {
-            CreateTabIfNoExist(application, _tabName);
+            CreateTabIfNoExist(application, TabName);
         }
 
         /// <summary>
@@ -170,7 +170,7 @@
 
                         // create the panel
                         var panel = application.CreateRibbonPanel(
-                            _tabName,
+                            TabName,
                             Language.TryGetCuiLocalGroupName(groupNameAttr.Value));
 
                         // Проходим по функциям группы
@@ -277,7 +277,7 @@
                     }
                 }
 
-                HideTextOfSmallButtons(_tabName, pluginsToHide);
+                HideTextOfSmallButtons(TabName, pluginsToHide);
             }
             catch (Exception exception)
             {
@@ -288,31 +288,31 @@
         private static void AddHelpPanel(UIControlledApplication application)
         {
             // create the panel
-            var panel = application.CreateRibbonPanel(_tabName, _tabName);
+            var panel = application.CreateRibbonPanel(TabName, TabName);
 
             // user info
             var userInfoButton = new PushButtonData(
                 "mpUserInfo",
-                ConvertLName(Language.GetItem(_langItem, "h13")),
+                ConvertLName(Language.GetItem(LangItem, "h13")),
                 Assembly.GetExecutingAssembly().Location,
                 "ModPlus_Revit.App.UserInfoCommand");
             userInfoButton.LargeImage =
                 new BitmapImage(
-                    new Uri("pack://application:,,,/Modplus_Revit_" + VersionData.CurrentRevitVersion + ";" +
-                            "component/Resources/UserInfo_32x32.png"));
+                    new Uri(
+                        $"pack://application:,,,/Modplus_Revit_{VersionData.CurrentRevitVersion};component/Resources/UserInfo_32x32.png"));
             userInfoButton.SetContextualHelp(new ContextualHelp(ContextualHelpType.Url, GetHelpUrl("userinfo", "help")));
             panel.AddItem(userInfoButton);
 
             // settings
             var settingsButton = new PushButtonData(
                 "mpSettings",
-                Language.GetItem(_langItem, "h12"),
+                Language.GetItem(LangItem, "h12"),
                 Assembly.GetExecutingAssembly().Location,
                 "ModPlus_Revit.App.MpMainSettingsFunction");
             settingsButton.LargeImage =
                 new BitmapImage(
-                    new Uri("pack://application:,,,/Modplus_Revit_" + VersionData.CurrentRevitVersion + ";" +
-                            "component/Resources/HelpBt.png"));
+                    new Uri(
+                        $"pack://application:,,,/Modplus_Revit_{VersionData.CurrentRevitVersion};component/Resources/HelpBt.png"));
             settingsButton.SetContextualHelp(new ContextualHelp(ContextualHelpType.Url, GetHelpUrl("mpsettings", "help")));
             panel.AddItem(settingsButton);
         }

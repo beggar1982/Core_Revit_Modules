@@ -244,6 +244,7 @@
             protected override WebRequest GetWebRequest(Uri uri)
             {
                 var w = base.GetWebRequest(uri);
+                
                 // ReSharper disable once PossibleNullReferenceException
                 w.Timeout = 3000;
                 return w;

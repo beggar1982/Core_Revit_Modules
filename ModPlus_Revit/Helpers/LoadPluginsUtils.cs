@@ -31,6 +31,7 @@ namespace ModPlus_Revit.Helpers
                 {
                     if (Activator.CreateInstance(type) is IModPlusFunctionInterface function)
                     {
+                        var assemblyFullName = loadedFuncAssembly.GetName().FullName;
                         var lf = new LoadedFunction
                         {
                             Name = function.Name,
@@ -38,17 +39,15 @@ namespace ModPlus_Revit.Helpers
                             Description = function.Description,
                             CanAddToRibbon = function.CanAddToRibbon,
                             ClassName = function.FullClassName,
-                            SmallIconUrl = "pack://application:,,,/" + loadedFuncAssembly.GetName().FullName +
-                                           ";component/Resources/" + function.Name +
-                                           "_16x16.png",
-                            BigIconUrl = "pack://application:,,,/" + loadedFuncAssembly.GetName().FullName +
-                                         ";component/Resources/" + function.Name +
-                                         "_32x32.png",
+                            SmallIconUrl =
+                                $"pack://application:,,,/{assemblyFullName};component/Resources/{function.Name}_16x16.png",
+                            BigIconUrl =
+                                $"pack://application:,,,/{assemblyFullName};component/Resources/{function.Name}_32x32.png",
                             AvailProductExternalVersion = VersionData.CurrentRevitVersion,
                             FullDescription = function.FullDescription,
                             ToolTipHelpImage = !string.IsNullOrEmpty(function.ToolTipHelpImage)
-                            ? "pack://application:,,,/" + loadedFuncAssembly.GetName().FullName + ";component/Resources/Help/" + function.ToolTipHelpImage
-                            : string.Empty,
+                                ? $"pack://application:,,,/{assemblyFullName};component/Resources/Help/{function.ToolTipHelpImage}"
+                                : string.Empty,
                             SubFunctionsNames = function.SubFunctionsNames,
                             SubFunctionsLNames = function.SubFunctionsLames,
                             SubDescriptions = function.SubDescriptions,
@@ -63,12 +62,10 @@ namespace ModPlus_Revit.Helpers
                         {
                             foreach (var subFunctionsName in function.SubFunctionsNames)
                             {
-                                lf.SubSmallIconsUrl.Add("pack://application:,,,/" + loadedFuncAssembly.GetName().FullName +
-                                                        ";component/Resources/" + subFunctionsName +
-                                                        "_16x16.png");
-                                lf.SubBigIconsUrl.Add("pack://application:,,,/" + loadedFuncAssembly.GetName().FullName +
-                                                      ";component/Resources/" + subFunctionsName +
-                                                      "_32x32.png");
+                                lf.SubSmallIconsUrl.Add(
+                                    $"pack://application:,,,/{assemblyFullName};component/Resources/{subFunctionsName}_16x16.png");
+                                lf.SubBigIconsUrl.Add(
+                                    $"pack://application:,,,/{assemblyFullName};component/Resources/{subFunctionsName}_32x32.png");
                             }
                         }
 
@@ -78,7 +75,7 @@ namespace ModPlus_Revit.Helpers
                             {
                                 lf.SubHelpImages.Add(
                                     !string.IsNullOrEmpty(helpImage)
-                                    ? "pack://application:,,,/" + loadedFuncAssembly.GetName().FullName + ";component/Resources/Help/" + helpImage
+                                    ? $"pack://application:,,,/{assemblyFullName};component/Resources/Help/{helpImage}"
                                     : string.Empty);
                             }
                         }
@@ -119,7 +116,7 @@ namespace ModPlus_Revit.Helpers
                 foreach (var file in Directory.GetFiles(funcDir, "*.dll", SearchOption.TopDirectoryOnly))
                 {
                     var fileInfo = new FileInfo(file);
-                    if (fileInfo.Name.Equals(pluginName + "_" + VersionData.CurrentRevitVersion + ".dll"))
+                    if (fileInfo.Name.Equals($"{pluginName}_{VersionData.CurrentRevitVersion}.dll"))
                     {
                         fileName = file;
                         break;

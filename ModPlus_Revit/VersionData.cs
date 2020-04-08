@@ -18,6 +18,8 @@ namespace ModPlus_Revit
         public const string CurrentRevitVersion = "2019";
 #elif R2020
         public const string CurrentRevitVersion = "2020";
+#elif R2021
+        public const string CurrentRevitVersion = "2021";
 #endif
     }
 }
