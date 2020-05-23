@@ -1,0 +1,246 @@
+﻿<mps:ModPlusWindow 
+    x:Class="ModPlus_Revit.App.SettingsWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mps="https://modplus.org/winfx/xaml/controls"
+    xmlns:converters="clr-namespace:ModPlusAPI.Converters;assembly=ModPlusAPI"
+    xmlns:app="clr-namespace:ModPlus_Revit.App"
+    mc:Ignorable="d"
+    SizeToContent="WidthAndHeight"
+    ResizeMode="NoResize"
+    ShowMinButton="False" WindowStartupLocation="CenterScreen"
+    d:DataContext="{d:DesignInstance app:SettingsViewModel, IsDesignTimeCreatable=False}">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/ModPlusStyle;component/Styles/Controls.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            <XmlDataProvider x:Key="Lang" Source="E:/ModPlus/Languages/en-US.xml" XPath="ModPlus/RevitDlls"></XmlDataProvider>
+            <XmlDataProvider x:Key="LangApi" Source="E:/ModPlus/Languages/en-US.xml" XPath="ModPlus/ModPlusAPI"></XmlDataProvider>
+            <converters:BooleanInverseConverter x:Key="BooleanInverseConverter"/>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- main settings -->
+        <GroupBox Header="{Binding Source={StaticResource Lang}, XPath=h2}" Grid.Row="0" >
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <!--Language-->
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Source={StaticResource Lang}, XPath=h5}"/>
+                <ComboBox Grid.Row="0" Grid.Column="1" 
+                          ItemsSource="{Binding Path=Languages}"
+                          SelectedItem="{Binding Path=SelectedLanguage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=DisplayName}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Image Grid.Column="2" Grid.Row="0" Height="24" Stretch="UniformToFill"
+                       HorizontalAlignment="Left"
+                       Source="{Binding Path=LanguageImage}"
+                       Margin="{DynamicResource ModPlusDefaultMargin}"
+                       Name="LanguageImage" UseLayoutRounding="False"
+                       RenderOptions.BitmapScalingMode="HighQuality">
+                </Image>
+                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4"
+                           Visibility="{Binding Path=MessageAboutLanguageVisibility}"
+                           TextWrapping="Wrap" MaxWidth="400"
+                           HorizontalAlignment="Center" TextAlignment="Center"
+                           Text="{Binding Source={StaticResource Lang}, XPath=h14}"
+                           Name="TbMessageAboutLanguage"
+                           FontWeight="SemiBold" Foreground="{DynamicResource ErrorBrush}"/>
+
+                <!--Theme-->
+                <TextBlock Grid.Row="2" Grid.Column="0"
+                           Text="{Binding Source={StaticResource Lang}, XPath=h6}"></TextBlock>
+                <ComboBox Grid.Row="2" Grid.Column="1"
+                          ItemsSource="{Binding Path=Themes}"
+                          SelectedItem="{Binding Path=SelectedTheme, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate DataType="mps:Theme">
+                            <StackPanel Orientation="Horizontal">
+                                <Border CornerRadius="4" Width="40" Height="30"
+                                        Background="{Binding Path=ShowCaseBackgroundBrush}">
+                                    <Ellipse HorizontalAlignment="Center" VerticalAlignment="Center"
+                                             Width="20" Height="20"
+                                             Fill="{Binding Path=ShowcaseBrush}"></Ellipse>
+                                </Border>
+                                <TextBlock VerticalAlignment="Center" Text="{Binding Path=DisplayName}" Margin="10 0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <!--Separator-->
+                <TextBlock Grid.Row="3" Grid.Column="0"
+                           Text="{Binding Source={StaticResource Lang}, XPath=h8}"/>
+                <ComboBox Grid.Row="3" Grid.Column="1"
+                          ItemsSource="{Binding Path=Separators}"
+                          SelectedItem="{Binding Path=SelectedSeparator, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          ToolTip="{Binding Source={StaticResource Lang}, XPath=tt1}"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Local license server -->
+        <GroupBox Grid.Row="1">
+            <GroupBox.Header>
+                <CheckBox Content="{Binding Source={StaticResource LangApi}, XPath=h16}"
+                          IsChecked="{Binding Path=IsLocalLicenseServerEnable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </GroupBox.Header>
+            <Grid>
+                <Grid.Visibility>
+                    <Binding Path="IsLocalLicenseServerEnable">
+                        <Binding.Converter>
+                            <converters:BooleanToVisibilityConverter
+                                        TrueVisibility="Visible" FalseVisibility="Collapsed"/>
+                        </Binding.Converter>
+                    </Binding>
+                </Grid.Visibility>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Ip address -->
+                <TextBlock Text="{Binding Source={StaticResource LangApi}, XPath=h17}"
+                           Grid.Row="0" Grid.Column="0"/>
+                <AdornerDecorator Grid.Row="0" Grid.Column="1">
+                    <TextBox MinWidth="100" mps:TextFieldAssist.SelectAllOnFocus="True"
+                             Text="{Binding Path=LocalLicenseServerIpAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             IsEnabled="{Binding Path=CanStopLocalLicenseServerConnection, Converter={StaticResource BooleanInverseConverter}}"
+                             mps:TextFieldAssist.ClearTextButton="True"/>
+                </AdornerDecorator>
+
+                <!-- port -->
+                <TextBlock Text="{Binding Source={StaticResource LangApi}, XPath=h18}"
+                           Grid.Row="0" Grid.Column="2"/>
+                <AdornerDecorator Grid.Row="0" Grid.Column="3">
+                    <mps:NumericBox 
+                                MinWidth="50" Name="TbLocalLicenseServerPort"
+                                Value="{Binding Path=LocalLicenseServerPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                IsEnabled="{Binding Path=CanStopLocalLicenseServerConnection, Converter={StaticResource BooleanInverseConverter}}"
+                                NumericInputMode="Numbers"
+                                HideUpDownButtons="True" Minimum="0" Maximum="65535"/>
+                </AdornerDecorator>
+
+                <!-- check connection -->
+                <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5"
+                        HorizontalAlignment="Stretch" 
+                        Command="{Binding Path=CheckLocalLicenseServerConnectionCommand}"
+                        Content="{Binding Source={StaticResource LangApi}, XPath=h19}"/>
+
+                <!-- stop connection -->
+                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5"
+                        Command="{Binding Path=StopLocalLicenseServerCommand}"
+                        HorizontalAlignment="Stretch"
+                        Content="{Binding Source={StaticResource LangApi}, XPath=h23}"/>
+
+                <!-- start connection -->
+                <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5"
+                        Command="{Binding Path=RestoreLocalLicenseServerCommand}"
+                        HorizontalAlignment="Stretch"
+                        Content="{Binding Source={StaticResource LangApi}, XPath=h24}"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Web license server -->
+        <GroupBox Grid.Row="2">
+            <GroupBox.Header>
+                <CheckBox Content="{Binding Source={StaticResource LangApi}, XPath=h36}"
+                          IsChecked="{Binding Path=IsWebLicenseServerEnable}"/>
+            </GroupBox.Header>
+            <Grid>
+                <Grid.Visibility>
+                    <Binding Path="IsWebLicenseServerEnable">
+                        <Binding.Converter>
+                            <converters:BooleanToVisibilityConverter
+                                        TrueVisibility="Visible" FalseVisibility="Collapsed"/>
+                        </Binding.Converter>
+                    </Binding>
+                </Grid.Visibility>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding Source={StaticResource LangApi}, XPath=h37}"
+                           Grid.Row="0" Grid.Column="0"/>
+                <TextBox Grid.Row="0" Grid.Column="1" MaxLength="36"
+                         Text="{Binding Path=WebLicenseServerGuid, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         mps:TextFieldAssist.SelectAllOnFocus="True"
+                         mps:TextFieldAssist.ClearTextButton="True"/>
+                <TextBlock Text="{Binding Source={StaticResource LangApi}, XPath=h38}"
+                           Grid.Row="1" Grid.Column="0"/>
+                <TextBox Grid.Row="1" Grid.Column="1"
+                         Text="{Binding Path=WebLicenseServerUserEmail, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         mps:TextFieldAssist.ClearTextButton="True"/>
+
+                <!-- check connection -->
+                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                        HorizontalAlignment="Stretch" 
+                        Command="{Binding Path=CheckWebLicenseServerConnectionCommand}"
+                        Content="{Binding Source={StaticResource LangApi}, XPath=h19}"/>
+
+                <!-- check user access -->
+                <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                        HorizontalAlignment="Stretch"
+                        Command="{Binding Path=CheckIsUserAllowForWebLicenseServerCommand}"
+                        Content="{Binding Source={StaticResource LangApi}, XPath=h40}"/>
+
+                <!-- stop connection -->
+                <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                        Command="{Binding Path=StopWebLicenseServerNotificationsCommand}"
+                        HorizontalAlignment="Stretch"
+                        Content="{Binding Source={StaticResource LangApi}, XPath=h23}"/>
+
+                <!-- start connection -->
+                <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
+                        Command="{Binding Path=RestoreWebLicenseServerNotificationsCommand}"
+                        HorizontalAlignment="Stretch"
+                        Content="{Binding Source={StaticResource LangApi}, XPath=h24}"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- DisableConnectionWithLicenseServerInAutoCAD -->
+        <CheckBox 
+            Grid.Row="3" Content="{Binding Source={StaticResource LangApi}, XPath=h25}"
+            IsChecked="{Binding Path=DisableConnectionWithLicenseServerInRevit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+    </Grid>
+</mps:ModPlusWindow>

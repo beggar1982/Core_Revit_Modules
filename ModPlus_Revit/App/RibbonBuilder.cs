@@ -308,7 +308,7 @@
                 "mpSettings",
                 Language.GetItem(LangItem, "h12"),
                 Assembly.GetExecutingAssembly().Location,
-                "ModPlus_Revit.App.MpMainSettingsFunction");
+                "ModPlus_Revit.App.SettingsCommand");
             settingsButton.LargeImage =
                 new BitmapImage(
                     new Uri(

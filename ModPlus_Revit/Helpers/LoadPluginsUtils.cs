@@ -26,7 +26,7 @@ namespace ModPlus_Revit.Helpers
             var types = GetLoadableTypes(loadedFuncAssembly);
             foreach (var type in types)
             {
-                var functionInterface = type.GetInterface(typeof(IModPlusFunctionInterface).Name);
+                var functionInterface = type.GetInterface(nameof(IModPlusFunctionInterface));
                 if (functionInterface != null)
                 {
                     if (Activator.CreateInstance(type) is IModPlusFunctionInterface function)

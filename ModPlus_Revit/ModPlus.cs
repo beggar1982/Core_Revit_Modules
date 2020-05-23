@@ -11,6 +11,7 @@
     using Helpers;
     using Microsoft.Win32;
     using ModPlusAPI;
+    using ModPlusAPI.Interfaces;
     using ModPlusAPI.LicenseServer;
     using ModPlusAPI.UserInfo;
     using ModPlusAPI.Windows;
@@ -44,14 +45,14 @@
                 // проверка загруженности модуля автообновления
                 CheckAutoUpdaterLoaded();
 
-                var disableConnectionWithLicenseServer =
-                    bool.TryParse(
-                        UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.Settings, "DisableConnectionWithLicenseServerInRevit"),
-                        out var b) && b; // false
+                var disableConnectionWithLicenseServer = Variables.DisableConnectionWithLicenseServerInRevit;
 
-                // start license server client
-                if (!disableConnectionWithLicenseServer)
-                    ClientStarter.StartConnection(ProductLicenseType.Revit);
+                // license server
+                if (Variables.IsLocalLicenseServerEnable && !disableConnectionWithLicenseServer)
+                    ClientStarter.StartConnection(SupportedProduct.Revit);
+                
+                if (Variables.IsWebLicenseServerEnable && !disableConnectionWithLicenseServer)
+                    WebLicenseServerClient.Instance.Start(SupportedProduct.Revit);
 
                 // user info
                 AuthorizationOnStartup();
@@ -163,7 +164,7 @@
         {
             try
             {
-                var loadWithWindows = !bool.TryParse(Regestry.GetValue("AutoUpdater", "LoadWithWindows"), out bool b) || b;
+                var loadWithWindows = !bool.TryParse(RegistryUtils.GetValue("AutoUpdater", "LoadWithWindows"), out bool b) || b;
                 if (loadWithWindows)
                 {
                     // Если "грузить с виндой", то проверяем, что модуль запущен
