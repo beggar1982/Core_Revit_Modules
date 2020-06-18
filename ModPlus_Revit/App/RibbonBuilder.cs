@@ -11,6 +11,7 @@
     using Helpers;
     using ModPlusAPI;
     using ModPlusAPI.Windows;
+    using RibbonItem = Autodesk.Revit.UI.RibbonItem;
     using RibbonPanel = Autodesk.Revit.UI.RibbonPanel;
 
     public static class RibbonBuilder
@@ -196,9 +197,10 @@
 
                                         // add top function
                                         var firstButton = CreatePushButtonData(loadedFunction);
+                                        var help = firstButton.GetContextualHelp();
                                         var sb = (SplitButton)panel.AddItem(splitButtonData);
                                         sb.AddPushButton(firstButton);
-                                        sb.SetContextualHelp(new ContextualHelp(ContextualHelpType.Url, GetHelpUrl()));
+                                        sb.SetContextualHelp(help);
 
                                         // Затем добавляем подфункции
                                         foreach (var subFunc in func.Elements("SubFunction"))
@@ -236,6 +238,7 @@
                                         var firstButton = CreatePushButtonData(loadedFunction);
                                         var help = firstButton.GetContextualHelp();
                                         splitButtonData.SetContextualHelp(help);
+                                        
                                         var sb = (SplitButton)panel.AddItem(splitButtonData);
                                         sb.AddPushButton(firstButton);
                                         sb.SetContextualHelp(help);
@@ -256,8 +259,11 @@
                             {
                                 var stackedItems = new List<RibbonItemData>();
 
-                                foreach (var func in item.Elements("Function"))
+                                var functions = item.Elements("Function").ToList();
+                                var indexesOfSplitButtons = new List<int>();
+                                for (var index = 0; index < functions.Count; index++)
                                 {
+                                    var func = functions[index];
                                     var loadedFunction =
                                         LoadPluginsUtils.LoadedFunctions.FirstOrDefault(x =>
                                             x.Name.Equals(func.Attribute("Name")?.Value));
@@ -265,13 +271,53 @@
                                         continue;
 
                                     pluginsToHide.Add(loadedFunction.Name);
-                                    stackedItems.Add(CreatePushButtonData(loadedFunction));
+
+                                    if (loadedFunction.SubFunctionsNames.Any())
+                                    {
+                                        var splitButtonData = new SplitButtonData(
+                                            loadedFunction.Name,
+                                            Language.GetFunctionLocalName(loadedFunction.Name, loadedFunction.LName));
+
+                                        stackedItems.Add(splitButtonData);
+                                        indexesOfSplitButtons.Add(index);
+                                    }
+                                    else
+                                    {
+                                        stackedItems.Add(CreatePushButtonData(loadedFunction));
+                                    }
                                 }
 
+                                IList<RibbonItem> ribbonItems = new List<RibbonItem>();
                                 if (stackedItems.Count == 2)
-                                    panel.AddStackedItems(stackedItems[0], stackedItems[1]);
+                                    ribbonItems = panel.AddStackedItems(stackedItems[0], stackedItems[1]);
                                 if (stackedItems.Count == 3)
-                                    panel.AddStackedItems(stackedItems[0], stackedItems[1], stackedItems[2]);
+                                    ribbonItems = panel.AddStackedItems(stackedItems[0], stackedItems[1], stackedItems[2]);
+
+                                if (indexesOfSplitButtons.Any())
+                                {
+                                    foreach (var index in indexesOfSplitButtons)
+                                    {
+                                        var func = functions[index];
+                                        
+                                        var loadedFunction =
+                                            LoadPluginsUtils.LoadedFunctions.FirstOrDefault(x =>
+                                                x.Name.Equals(func.Attribute("Name")?.Value));
+
+                                        // add top function
+                                        var firstButton = CreatePushButtonData(loadedFunction);
+                                        var help = firstButton.GetContextualHelp();
+
+                                        var sb = ribbonItems[index] as SplitButton;
+                                        sb.AddPushButton(firstButton);
+                                        sb.SetContextualHelp(help);
+
+                                        // internal sub functions
+                                        for (var i = 0; i < loadedFunction.SubClassNames.Count; i++)
+                                        {
+                                            sb.AddPushButton(CreatePushButtonData(loadedFunction, i));
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -409,7 +455,7 @@
                 pshBtn.SetContextualHelp(new ContextualHelp(ContextualHelpType.Url, helpUrl));
             return pshBtn;
         }
-        
+
         /// <summary>
         /// Проверка, что группа не пуста
         /// </summary>
