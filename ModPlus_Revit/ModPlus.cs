@@ -159,7 +159,9 @@
             }
         }
         
-        /// <summary>Проверка загруженности модуля автообновления</summary>
+        /// <summary>
+        /// Проверка загруженности модуля автообновления
+        /// </summary>
         private static void CheckAutoUpdaterLoaded()
         {
             try
