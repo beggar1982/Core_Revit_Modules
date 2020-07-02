@@ -212,7 +212,7 @@
                                 var func = item;
                                 var fName = func.Attribute("Name")?.Value ?? string.Empty;
                                 var loadedFunction =
-                                    LoadPluginsUtils.LoadedFunctions.FirstOrDefault(x => x.Name.Equals(fName));
+                                    LoadPluginsUtils.LoadedPlugins.FirstOrDefault(x => x.Name.Equals(fName));
                                 if (loadedFunction == null)
                                     continue;
 
@@ -235,7 +235,7 @@
                                     {
                                         var subFName = subFunc.Attribute("Name")?.Value ?? string.Empty;
                                         var loadedSubFunction =
-                                            LoadPluginsUtils.LoadedFunctions.FirstOrDefault(x => x.Name.Equals(subFName));
+                                            LoadPluginsUtils.LoadedPlugins.FirstOrDefault(x => x.Name.Equals(subFName));
                                         if (loadedSubFunction == null)
                                             continue;
                                         sb.AddPushButton(CreatePushButtonData(loadedSubFunction));
@@ -278,7 +278,7 @@
                                     var func = functions[index];
                                     var fName = func.Attribute("Name")?.Value ?? string.Empty;
                                     var loadedFunction =
-                                        LoadPluginsUtils.LoadedFunctions.FirstOrDefault(x => x.Name.Equals(fName));
+                                        LoadPluginsUtils.LoadedPlugins.FirstOrDefault(x => x.Name.Equals(fName));
                                     if (loadedFunction == null)
                                         continue;
 
@@ -312,7 +312,7 @@
                                         var func = functions[index];
                                         
                                         var loadedFunction =
-                                            LoadPluginsUtils.LoadedFunctions.FirstOrDefault(x =>
+                                            LoadPluginsUtils.LoadedPlugins.FirstOrDefault(x =>
                                                 x.Name.Equals(func.Attribute("Name")?.Value));
 
                                         // add top function
@@ -479,7 +479,7 @@
             {
                 if (item.Name == "Function")
                 {
-                    if (LoadPluginsUtils.LoadedFunctions.Any(x => x.Name.Equals(item.Attribute("Name")?.Value)))
+                    if (LoadPluginsUtils.LoadedPlugins.Any(x => x.Name.Equals(item.Attribute("Name")?.Value)))
                     {
                         return true;
                     }
@@ -489,7 +489,7 @@
                     foreach (var func in item.Elements("Function"))
                     {
                         var loadedFunction = LoadPluginsUtils
-                            .LoadedFunctions.FirstOrDefault(x => x.Name.Equals(func.Attribute("Name")?.Value));
+                            .LoadedPlugins.FirstOrDefault(x => x.Name.Equals(func.Attribute("Name")?.Value));
 
                         if (loadedFunction != null)
                         {

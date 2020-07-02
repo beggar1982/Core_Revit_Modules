@@ -19,9 +19,9 @@ namespace ModPlus_Revit.Helpers
         /// <summary>
         /// Список загруженных файлов в виде специального класса для последующего использования при построения ленты и меню
         /// </summary>
-        public static List<LoadedFunction> LoadedFunctions = new List<LoadedFunction>();
+        public static List<LoadedFunction> LoadedPlugins = new List<LoadedFunction>();
 
-        public static void GetDataFromFunctionInterface(Assembly loadedFuncAssembly, string fileName)
+        public static void LoadDataFromPluginInterface(Assembly loadedFuncAssembly, string fileName)
         {
             var types = GetLoadableTypes(loadedFuncAssembly);
             foreach (var type in types)
@@ -39,6 +39,7 @@ namespace ModPlus_Revit.Helpers
                             Description = function.Description,
                             CanAddToRibbon = function.CanAddToRibbon,
                             ClassName = function.FullClassName,
+                            AppFullClassName = function.AppFullClassName,
                             SmallIconUrl =
                                 $"pack://application:,,,/{assemblyFullName};component/Resources/{function.Name}_16x16.png",
                             BigIconUrl =
@@ -56,7 +57,8 @@ namespace ModPlus_Revit.Helpers
                             SubSmallIconsUrl = new List<string>(),
                             SubHelpImages = new List<string>(),
                             SubClassNames = function.SubClassNames,
-                            Location = fileName
+                            Location = fileName,
+                            Assembly = loadedFuncAssembly
                         };
                         if (function.SubFunctionsNames != null)
                         {
@@ -80,7 +82,7 @@ namespace ModPlus_Revit.Helpers
                             }
                         }
 
-                        LoadedFunctions.Add(lf);
+                        LoadedPlugins.Add(lf);
                     }
 
                     break;

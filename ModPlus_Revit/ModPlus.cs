@@ -34,7 +34,7 @@
                 // Принудительная загрузка сборок
                 LoadAssemblies();
                 UserConfigFile.InitConfigFile();
-                LoadFunctions();
+                LoadPlugins();
 
                 // check adaptation
                 CheckAdaptation();
@@ -56,6 +56,9 @@
 
                 // user info
                 AuthorizationOnStartup();
+
+                // load applications
+                LoadApplications(application);
 
                 return Result.Succeeded;
             }
@@ -96,8 +99,8 @@
             }
         }
         
-        // Загрузка функций
-        private static void LoadFunctions()
+        // Загрузка плагинов
+        private static void LoadPlugins()
         {
             try
             {
@@ -137,7 +140,7 @@
                                 {
                                     // load
                                     var localFuncAssembly = Assembly.LoadFrom(file);
-                                    LoadPluginsUtils.GetDataFromFunctionInterface(localFuncAssembly, file);
+                                    LoadPluginsUtils.LoadDataFromPluginInterface(localFuncAssembly, file);
                                 }
                                 else
                                 {
@@ -145,7 +148,7 @@
                                     if (!string.IsNullOrEmpty(foundedFile) && File.Exists(foundedFile))
                                     {
                                         var localFuncAssembly = Assembly.LoadFrom(foundedFile);
-                                        LoadPluginsUtils.GetDataFromFunctionInterface(localFuncAssembly, foundedFile);
+                                        LoadPluginsUtils.LoadDataFromPluginInterface(localFuncAssembly, foundedFile);
                                     }
                                 }
                             }
@@ -157,6 +160,54 @@
             {
                 ExceptionBox.Show(exception);
             }
+        }
+
+        private static void LoadApplications(UIControlledApplication application)
+        {
+            foreach (var loadedFunction in LoadPluginsUtils.LoadedPlugins
+                .Where(p => !string.IsNullOrEmpty(p.AppFullClassName)))
+            {
+                try
+                {
+                    if (IsApplicationInAddinFile(loadedFunction.Name))
+                        continue;
+
+                    var type = loadedFunction.Assembly.GetType(loadedFunction.AppFullClassName);
+                    if (type != null && type.GetInterface(nameof(IExternalApplication)) != null)
+                    {
+                        (Activator.CreateInstance(type) as IExternalApplication)?.OnStartup(application);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    ExceptionBox.Show(exception);
+                }
+            }
+        }
+
+        private static bool IsApplicationInAddinFile(string pluginName)
+        {
+            foreach (var directory in RevitAddinsLocation.GetAllVariants(VersionData.CurrentRevitVersion))
+            {
+                if (!Directory.Exists(directory)) 
+                    continue;
+
+                var addinFile = Path.Combine(directory, "ModPlus.addin");
+                if (!File.Exists(addinFile))
+                    continue;
+
+                using (var fs = new FileStream(addinFile, FileMode.Open, FileAccess.Read, FileShare.None))
+                {
+                    var doc = XElement.Load(fs);
+                    foreach (var xElement in doc.Elements("AddIn"))
+                    {
+                        if (xElement.Element("Name")?.Value == pluginName)
+                            return true;
+                    }
+                }
+            }
+
+            return false;
         }
         
         /// <summary>
@@ -200,7 +251,7 @@
                     // Грузим файл
                     try
                     {
-                        var url = "http://www.modplus.org/Downloads/StandardCUIRevit.xml";
+                        const string url = "http://www.modplus.org/Downloads/StandardCUIRevit.xml";
                         if (string.IsNullOrEmpty(url))
                             return;
                         string xmlStr;
@@ -218,7 +269,7 @@
             }
         }
 
-        private async void AuthorizationOnStartup()
+        private static async void AuthorizationOnStartup()
         {
             try
             {

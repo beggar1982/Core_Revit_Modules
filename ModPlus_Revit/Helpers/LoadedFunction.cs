@@ -2,6 +2,7 @@
 namespace ModPlus_Revit.Helpers
 {
     using System.Collections.Generic;
+    using System.Reflection;
 
     /// <summary>
     /// Загруженный плагин. Свойства класса соответствуют свойствам интерфейса <see cref="ModPlusAPI.Interfaces.IModPlusFunctionInterface"/>
@@ -20,6 +21,8 @@ namespace ModPlus_Revit.Helpers
         public string AvailProductExternalVersion { get; set; }
 
         public string ClassName { get; set; }
+
+        public string AppFullClassName { get; set; }
 
         public string SmallIconUrl { get; set; }
 
@@ -48,6 +51,8 @@ namespace ModPlus_Revit.Helpers
         public List<string> SubBigIconsUrl { get; set; }
 
         public List<string> SubClassNames { get; set; }
+
+        public Assembly Assembly { get; set; }
     }
 }
 #pragma warning restore SA1600 // Elements should be documented

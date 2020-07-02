@@ -78,6 +78,7 @@
     <Compile Include="App\UserInfoCommand.cs" />
     <Compile Include="Helpers\LoadedFunction.cs" />
     <Compile Include="Helpers\LoadPluginsUtils.cs" />
+    <Compile Include="Helpers\RevitAddinsLocation.cs" />
     <Compile Include="ModPlus.cs" />
     <Compile Include="VersionData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
