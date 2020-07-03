@@ -19,7 +19,7 @@ namespace ModPlus_Revit.Helpers
         /// <summary>
         /// Список загруженных файлов в виде специального класса для последующего использования при построения ленты и меню
         /// </summary>
-        public static List<LoadedFunction> LoadedPlugins = new List<LoadedFunction>();
+        public static List<LoadedPlugin> LoadedPlugins = new List<LoadedPlugin>();
 
         public static void LoadDataFromPluginInterface(Assembly loadedFuncAssembly, string fileName)
         {
@@ -32,7 +32,7 @@ namespace ModPlus_Revit.Helpers
                     if (Activator.CreateInstance(type) is IModPlusFunctionInterface function)
                     {
                         var assemblyFullName = loadedFuncAssembly.GetName().FullName;
-                        var lf = new LoadedFunction
+                        var lf = new LoadedPlugin
                         {
                             Name = function.Name,
                             LName = function.LName,
@@ -40,6 +40,7 @@ namespace ModPlus_Revit.Helpers
                             CanAddToRibbon = function.CanAddToRibbon,
                             ClassName = function.FullClassName,
                             AppFullClassName = function.AppFullClassName,
+                            AddInId = function.AddInId,
                             SmallIconUrl =
                                 $"pack://application:,,,/{assemblyFullName};component/Resources/{function.Name}_16x16.png",
                             BigIconUrl =

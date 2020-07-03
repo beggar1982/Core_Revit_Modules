@@ -1,13 +1,14 @@
 ﻿#pragma warning disable SA1600 // Elements should be documented
 namespace ModPlus_Revit.Helpers
 {
+    using System;
     using System.Collections.Generic;
     using System.Reflection;
 
     /// <summary>
     /// Загруженный плагин. Свойства класса соответствуют свойствам интерфейса <see cref="ModPlusAPI.Interfaces.IModPlusFunctionInterface"/>
     /// </summary>
-    public class LoadedFunction
+    public class LoadedPlugin
     {
         /// <summary>
         /// Расположение файла плагина
@@ -23,6 +24,8 @@ namespace ModPlus_Revit.Helpers
         public string ClassName { get; set; }
 
         public string AppFullClassName { get; set; }
+
+        public Guid AddInId { get; set; }
 
         public string SmallIconUrl { get; set; }
 

@@ -20,7 +20,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\x64\Debug\</OutputPath>
+    <OutputPath>..\..\..\..\..\ModPlus\Extensions\</OutputPath>
     <DefineConstants>TRACE;DEBUG;R2021</DefineConstants>
     <AssemblyName>$(AssemblyName)_2021</AssemblyName>
     <ErrorReport>prompt</ErrorReport>
@@ -76,9 +76,8 @@
     <Compile Include="App\SettingsCommand.cs" />
     <Compile Include="App\RibbonBuilder.cs" />
     <Compile Include="App\UserInfoCommand.cs" />
-    <Compile Include="Helpers\LoadedFunction.cs" />
+    <Compile Include="Helpers\LoadedPlugin.cs" />
     <Compile Include="Helpers\LoadPluginsUtils.cs" />
-    <Compile Include="Helpers\RevitAddinsLocation.cs" />
     <Compile Include="ModPlus.cs" />
     <Compile Include="VersionData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

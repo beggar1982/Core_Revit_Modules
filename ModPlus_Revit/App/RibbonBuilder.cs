@@ -375,43 +375,43 @@
             panel.AddItem(settingsButton);
         }
 
-        private static void AddPushButton(RibbonPanel panel, LoadedFunction loadedFunction)
+        private static void AddPushButton(RibbonPanel panel, LoadedPlugin loadedPlugin)
         {
             // ReSharper disable once AssignmentIsFullyDiscarded
-            _ = panel.AddItem(CreatePushButtonData(loadedFunction)) as PushButton;
+            _ = panel.AddItem(CreatePushButtonData(loadedPlugin)) as PushButton;
         }
 
-        private static PushButtonData CreatePushButtonData(LoadedFunction loadedFunction)
+        private static PushButtonData CreatePushButtonData(LoadedPlugin loadedPlugin)
         {
             return CreatePushButtonData(
-                loadedFunction.Name,
-                Language.GetFunctionLocalName(loadedFunction.Name, loadedFunction.LName),
-                Language.GetFunctionShortDescription(loadedFunction.Name, loadedFunction.Description),
-                loadedFunction.SmallIconUrl,
-                loadedFunction.BigIconUrl,
-                Language.GetFunctionFullDescription(loadedFunction.Name, loadedFunction.FullDescription),
-                loadedFunction.ToolTipHelpImage, loadedFunction.Location,
-                loadedFunction.ClassName,
-                GetHelpUrl(loadedFunction.Name));
+                loadedPlugin.Name,
+                Language.GetFunctionLocalName(loadedPlugin.Name, loadedPlugin.LName),
+                Language.GetFunctionShortDescription(loadedPlugin.Name, loadedPlugin.Description),
+                loadedPlugin.SmallIconUrl,
+                loadedPlugin.BigIconUrl,
+                Language.GetFunctionFullDescription(loadedPlugin.Name, loadedPlugin.FullDescription),
+                loadedPlugin.ToolTipHelpImage, loadedPlugin.Location,
+                loadedPlugin.ClassName,
+                GetHelpUrl(loadedPlugin.Name));
         }
 
-        private static PushButtonData CreatePushButtonData(LoadedFunction loadedFunction, int i)
+        private static PushButtonData CreatePushButtonData(LoadedPlugin loadedPlugin, int i)
         {
             return CreatePushButtonData(
-                    loadedFunction.SubFunctionsNames[i],
+                    loadedPlugin.SubFunctionsNames[i],
                     Language.GetFunctionLocalName(
-                        loadedFunction.Name,
-                        loadedFunction.SubFunctionsLNames[i], i + 1),
+                        loadedPlugin.Name,
+                        loadedPlugin.SubFunctionsLNames[i], i + 1),
                     Language.GetFunctionShortDescription(
-                        loadedFunction.Name,
-                        loadedFunction.SubDescriptions[i], i + 1),
-                    loadedFunction.SubSmallIconsUrl[i], loadedFunction.SubBigIconsUrl[i],
+                        loadedPlugin.Name,
+                        loadedPlugin.SubDescriptions[i], i + 1),
+                    loadedPlugin.SubSmallIconsUrl[i], loadedPlugin.SubBigIconsUrl[i],
                     Language.GetFunctionFullDescription(
-                        loadedFunction.Name,
-                        loadedFunction.SubFullDescriptions[i], i + 1),
-                    loadedFunction.SubHelpImages[i], loadedFunction.Location,
-                    loadedFunction.SubClassNames[i],
-                    GetHelpUrl(loadedFunction.Name));
+                        loadedPlugin.Name,
+                        loadedPlugin.SubFullDescriptions[i], i + 1),
+                    loadedPlugin.SubHelpImages[i], loadedPlugin.Location,
+                    loadedPlugin.SubClassNames[i],
+                    GetHelpUrl(loadedPlugin.Name));
         }
         
         private static PushButtonData CreatePushButtonData(

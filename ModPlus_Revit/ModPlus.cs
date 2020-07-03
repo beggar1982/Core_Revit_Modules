@@ -56,10 +56,7 @@
 
                 // user info
                 AuthorizationOnStartup();
-
-                // load applications
-                LoadApplications(application);
-
+                
                 return Result.Succeeded;
             }
             catch (Exception exception)
@@ -160,54 +157,6 @@
             {
                 ExceptionBox.Show(exception);
             }
-        }
-
-        private static void LoadApplications(UIControlledApplication application)
-        {
-            foreach (var loadedFunction in LoadPluginsUtils.LoadedPlugins
-                .Where(p => !string.IsNullOrEmpty(p.AppFullClassName)))
-            {
-                try
-                {
-                    if (IsApplicationInAddinFile(loadedFunction.Name))
-                        continue;
-
-                    var type = loadedFunction.Assembly.GetType(loadedFunction.AppFullClassName);
-                    if (type != null && type.GetInterface(nameof(IExternalApplication)) != null)
-                    {
-                        (Activator.CreateInstance(type) as IExternalApplication)?.OnStartup(application);
-                    }
-                }
-                catch (Exception exception)
-                {
-                    ExceptionBox.Show(exception);
-                }
-            }
-        }
-
-        private static bool IsApplicationInAddinFile(string pluginName)
-        {
-            foreach (var directory in RevitAddinsLocation.GetAllVariants(VersionData.CurrentRevitVersion))
-            {
-                if (!Directory.Exists(directory)) 
-                    continue;
-
-                var addinFile = Path.Combine(directory, "ModPlus.addin");
-                if (!File.Exists(addinFile))
-                    continue;
-
-                using (var fs = new FileStream(addinFile, FileMode.Open, FileAccess.Read, FileShare.None))
-                {
-                    var doc = XElement.Load(fs);
-                    foreach (var xElement in doc.Elements("AddIn"))
-                    {
-                        if (xElement.Element("Name")?.Value == pluginName)
-                            return true;
-                    }
-                }
-            }
-
-            return false;
         }
         
         /// <summary>
