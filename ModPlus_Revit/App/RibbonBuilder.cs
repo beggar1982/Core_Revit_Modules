@@ -174,7 +174,7 @@
 
             if (panel == null)
                 panel = application.CreateRibbonPanel(tabName, panelName);
-            
+
             return panel;
         }
 
@@ -272,10 +272,9 @@
                                 var stackedItems = new List<RibbonItemData>();
 
                                 var functions = item.Elements("Function").ToList();
-                                var indexesOfSplitButtons = new List<int>();
-                                for (var index = 0; index < functions.Count; index++)
+                                var indexesOfSplitButtons = new List<Tuple<string, int>>();
+                                foreach (var func in functions)
                                 {
-                                    var func = functions[index];
                                     var fName = func.Attribute("Name")?.Value ?? string.Empty;
                                     var loadedFunction =
                                         LoadPluginsUtils.LoadedPlugins.FirstOrDefault(x => x.Name.Equals(fName));
@@ -291,7 +290,7 @@
                                             Language.GetFunctionLocalName(loadedFunction.Name, loadedFunction.LName));
 
                                         stackedItems.Add(splitButtonData);
-                                        indexesOfSplitButtons.Add(index);
+                                        indexesOfSplitButtons.Add(new Tuple<string, int>(loadedFunction.Name, stackedItems.Count - 1));
                                     }
                                     else
                                     {
@@ -300,26 +299,39 @@
                                 }
 
                                 IList<RibbonItem> ribbonItems = new List<RibbonItem>();
-                                if (stackedItems.Count == 2)
+                                if (stackedItems.Count == 1)
+                                {
+                                    var ribbonItem = panel.AddItem(stackedItems.First());
+                                    ribbonItems = new List<RibbonItem> { ribbonItem };
+                                }
+                                else if (stackedItems.Count == 2)
+                                {
                                     ribbonItems = panel.AddStackedItems(stackedItems[0], stackedItems[1]);
-                                if (stackedItems.Count == 3)
+                                }
+                                else if (stackedItems.Count == 3)
+                                {
                                     ribbonItems = panel.AddStackedItems(stackedItems[0], stackedItems[1], stackedItems[2]);
+                                }
 
                                 if (indexesOfSplitButtons.Any())
                                 {
-                                    foreach (var index in indexesOfSplitButtons)
+                                    foreach (var tuple in indexesOfSplitButtons)
                                     {
-                                        var func = functions[index];
-                                        
+                                        var func = functions.FirstOrDefault(f => f.Attribute("Name")?.Value == tuple.Item1);
+                                        if (func == null)
+                                            continue;
+
                                         var loadedFunction =
                                             LoadPluginsUtils.LoadedPlugins.FirstOrDefault(x =>
                                                 x.Name.Equals(func.Attribute("Name")?.Value));
+                                        if (loadedFunction == null)
+                                            continue;
 
                                         // add top function
                                         var firstButton = CreatePushButtonData(loadedFunction);
                                         var help = firstButton.GetContextualHelp();
 
-                                        var sb = ribbonItems[index] as SplitButton;
+                                        var sb = ribbonItems[tuple.Item2] as SplitButton;
                                         sb.AddPushButton(firstButton);
                                         sb.SetContextualHelp(help);
 
@@ -413,7 +425,7 @@
                     loadedPlugin.SubClassNames[i],
                     GetHelpUrl(loadedPlugin.Name));
         }
-        
+
         private static PushButtonData CreatePushButtonData(
             string name,
             string lName,
