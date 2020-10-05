@@ -79,6 +79,9 @@
     <Compile Include="Helpers\LoadedPlugin.cs" />
     <Compile Include="Helpers\LoadPluginsUtils.cs" />
     <Compile Include="ModPlus.cs" />
+    <Compile Include="Utils\ExtensibleStorageExtensions.cs" />
+    <Compile Include="Utils\GeometryUtils.cs" />
+    <Compile Include="Utils\NumericExtensions.cs" />
     <Compile Include="VersionData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -166,6 +169,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
