@@ -26,6 +26,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x64</PlatformTarget>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <!-- For Revit versions -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'R2017|x64'">
@@ -33,30 +35,35 @@
     <DefineConstants>TRACE;R2017</DefineConstants>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <AssemblyName>$(AssemblyName)_2017</AssemblyName>
+    <DocumentationFile>bin\x64\R2017\ModPlus_Revit_2017.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'R2018|x64'">
     <OutputPath>bin\x64\R2018\</OutputPath>
     <DefineConstants>TRACE;R2018</DefineConstants>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <AssemblyName>$(AssemblyName)_2018</AssemblyName>
+    <DocumentationFile>bin\x64\R2018\ModPlus_Revit_2018.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'R2019|x64'">
     <OutputPath>bin\x64\R2019\</OutputPath>
     <DefineConstants>TRACE;R2019</DefineConstants>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <AssemblyName>$(AssemblyName)_2019</AssemblyName>
+    <DocumentationFile>bin\x64\R2019\ModPlus_Revit_2019.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'R2020|x64'">
     <OutputPath>bin\x64\R2020\</OutputPath>
     <DefineConstants>TRACE;R2020</DefineConstants>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <AssemblyName>$(AssemblyName)_2020</AssemblyName>
+    <DocumentationFile>bin\x64\R2020\ModPlus_Revit_2020.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'R2021|x64'">
     <OutputPath>bin\x64\R2021\</OutputPath>
     <DefineConstants>TRACE;R2021</DefineConstants>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <AssemblyName>$(AssemblyName)_2021</AssemblyName>
+    <DocumentationFile>bin\x64\R2021\ModPlus_Revit_2021.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
