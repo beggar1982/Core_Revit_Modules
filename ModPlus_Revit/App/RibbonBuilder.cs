@@ -241,7 +241,7 @@
                                         sb.AddPushButton(CreatePushButtonData(loadedSubFunction));
                                     }
                                 }
-                                else if (loadedFunction.SubFunctionsNames.Any())
+                                else if (loadedFunction.SubPluginsNames.Any())
                                 {
                                     var splitButtonData = new SplitButtonData(
                                         loadedFunction.Name,
@@ -283,7 +283,7 @@
 
                                     pluginsToHide.Add(loadedFunction.Name);
 
-                                    if (loadedFunction.SubFunctionsNames.Any())
+                                    if (loadedFunction.SubPluginsNames.Any())
                                     {
                                         var splitButtonData = new SplitButtonData(
                                             loadedFunction.Name,
@@ -403,17 +403,17 @@
                 loadedPlugin.BigIconUrl,
                 Language.GetFunctionFullDescription(loadedPlugin.Name, loadedPlugin.FullDescription),
                 loadedPlugin.ToolTipHelpImage, loadedPlugin.Location,
-                loadedPlugin.ClassName,
+                loadedPlugin.FullClassName,
                 GetHelpUrl(loadedPlugin.Name));
         }
 
         private static PushButtonData CreatePushButtonData(LoadedPlugin loadedPlugin, int i)
         {
             return CreatePushButtonData(
-                    loadedPlugin.SubFunctionsNames[i],
+                    loadedPlugin.SubPluginsNames[i],
                     Language.GetFunctionLocalName(
                         loadedPlugin.Name,
-                        loadedPlugin.SubFunctionsLNames[i], i + 1),
+                        loadedPlugin.SubPluginsLNames[i], i + 1),
                     Language.GetFunctionShortDescription(
                         loadedPlugin.Name,
                         loadedPlugin.SubDescriptions[i], i + 1),

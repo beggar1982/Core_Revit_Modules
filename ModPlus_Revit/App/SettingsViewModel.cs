@@ -8,7 +8,7 @@
     using System.Windows.Input;
     using System.Windows.Media.Imaging;
     using ModPlusAPI;
-    using ModPlusAPI.Interfaces;
+    using ModPlusAPI.Enums;
     using ModPlusAPI.LicenseServer;
     using ModPlusAPI.Mvvm;
     using ModPlusAPI.Windows;

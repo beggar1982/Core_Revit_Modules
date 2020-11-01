@@ -205,6 +205,38 @@
         }
 
         /// <summary>
+        /// Лежат ли текущий и проверяемый отрезок на одной прямой. 
+        /// </summary>
+        /// <param name="firstLine">Текущий отрезок</param>
+        /// <param name="secondLine">Проверяемый отрезок</param>
+        /// <param name="tolerance">Допуск на сравнение чисел</param>
+        public static bool IsLieOnSameStraightLine(this Line firstLine, Line secondLine, double tolerance = Tolerance)
+        {
+            // Два отрезка лежат на одной прямой если каждый единичный вектор, построенный через любую пару
+            // концевых точек двух отрезков, коллинеарен единичному вектору направления одного из отрезков 
+
+            if (!firstLine.IsParallelTo(secondLine))
+                return false;
+
+            var firstLinePoints = firstLine.Tessellate();
+            var secondLinePoints = secondLine.Tessellate();
+            var fv = firstLine.Direction;
+            foreach (var firstLinePoint in firstLinePoints)
+            {
+                foreach (var secondLinePoint in secondLinePoints)
+                {
+                    if (Math.Abs(firstLinePoint.DistanceTo(secondLinePoint)) < tolerance)
+                        continue;
+                    var v = (secondLinePoint - firstLinePoint).Normalize();
+                    if (!fv.IsParallelTo(v))
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Возвращает 3D точку <see cref="XYZ"/>, спроецированную на плоскость <see cref="Plane"/> 
         /// </summary>
         /// <remarks>

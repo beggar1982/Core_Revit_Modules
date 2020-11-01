@@ -11,7 +11,7 @@
     using Helpers;
     using Microsoft.Win32;
     using ModPlusAPI;
-    using ModPlusAPI.Interfaces;
+    using ModPlusAPI.Enums;
     using ModPlusAPI.LicenseServer;
     using ModPlusAPI.UserInfo;
     using ModPlusAPI.Windows;
@@ -29,7 +29,7 @@
                     return Result.Cancelled;
 
                 // statistic
-                Statistic.SendPluginStarting("Revit", VersionData.CurrentRevitVersion);
+                Statistic.SendModuleLoaded("Revit", VersionData.CurrentRevitVersion);
 
                 // Принудительная загрузка сборок
                 LoadAssemblies();

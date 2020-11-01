@@ -9,6 +9,7 @@ namespace ModPlus_Revit.Helpers
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using ModPlusAPI.Abstractions;
     using ModPlusAPI.Interfaces;
 
     /// <summary>
@@ -21,15 +22,20 @@ namespace ModPlus_Revit.Helpers
         /// </summary>
         public static List<LoadedPlugin> LoadedPlugins = new List<LoadedPlugin>();
 
+        /// <summary>
+        /// Загрузка данных о плагине из интерфейса
+        /// </summary>
+        /// <param name="loadedFuncAssembly">Загружаемая сборка</param>
+        /// <param name="fileName">Имя файла</param>
         public static void LoadDataFromPluginInterface(Assembly loadedFuncAssembly, string fileName)
         {
             var types = GetLoadableTypes(loadedFuncAssembly);
             foreach (var type in types)
             {
-                var functionInterface = type.GetInterface(nameof(IModPlusFunctionInterface));
+                var functionInterface = type.GetInterface(nameof(IModPlusPlugin));
                 if (functionInterface != null)
                 {
-                    if (Activator.CreateInstance(type) is IModPlusFunctionInterface function)
+                    if (Activator.CreateInstance(type) is IModPlusPlugin function)
                     {
                         var assemblyFullName = loadedFuncAssembly.GetName().FullName;
                         var lf = new LoadedPlugin
@@ -38,7 +44,7 @@ namespace ModPlus_Revit.Helpers
                             LName = function.LName,
                             Description = function.Description,
                             CanAddToRibbon = function.CanAddToRibbon,
-                            ClassName = function.FullClassName,
+                            FullClassName = function.FullClassName,
                             AppFullClassName = function.AppFullClassName,
                             AddInId = function.AddInId,
                             SmallIconUrl =
@@ -50,8 +56,72 @@ namespace ModPlus_Revit.Helpers
                             ToolTipHelpImage = !string.IsNullOrEmpty(function.ToolTipHelpImage)
                                 ? $"pack://application:,,,/{assemblyFullName};component/Resources/Help/{function.ToolTipHelpImage}"
                                 : string.Empty,
-                            SubFunctionsNames = function.SubFunctionsNames,
-                            SubFunctionsLNames = function.SubFunctionsLames,
+                            SubPluginsNames = function.SubPluginsNames,
+                            SubPluginsLNames = function.SubPluginsLNames,
+                            SubDescriptions = function.SubDescriptions,
+                            SubFullDescriptions = function.SubFullDescriptions,
+                            SubBigIconsUrl = new List<string>(),
+                            SubSmallIconsUrl = new List<string>(),
+                            SubHelpImages = new List<string>(),
+                            SubClassNames = function.SubClassNames,
+                            Location = fileName,
+                            Assembly = loadedFuncAssembly
+                        };
+                        if (function.SubPluginsNames != null)
+                        {
+                            foreach (var subFunctionsName in function.SubPluginsNames)
+                            {
+                                lf.SubSmallIconsUrl.Add(
+                                    $"pack://application:,,,/{assemblyFullName};component/Resources/{subFunctionsName}_16x16.png");
+                                lf.SubBigIconsUrl.Add(
+                                    $"pack://application:,,,/{assemblyFullName};component/Resources/{subFunctionsName}_32x32.png");
+                            }
+                        }
+
+                        if (function.SubHelpImages != null)
+                        {
+                            foreach (var helpImage in function.SubHelpImages)
+                            {
+                                lf.SubHelpImages.Add(
+                                    !string.IsNullOrEmpty(helpImage)
+                                    ? $"pack://application:,,,/{assemblyFullName};component/Resources/Help/{helpImage}"
+                                    : string.Empty);
+                            }
+                        }
+
+                        LoadedPlugins.Add(lf);
+                    }
+
+                    break;
+                }
+
+                // TODO Remove after update all plugins
+                functionInterface = type.GetInterface(nameof(IModPlusFunctionInterface));
+                if (functionInterface != null)
+                {
+                    if (Activator.CreateInstance(type) is IModPlusFunctionInterface function)
+                    {
+                        var assemblyFullName = loadedFuncAssembly.GetName().FullName;
+                        var lf = new LoadedPlugin
+                        {
+                            Name = function.Name,
+                            LName = function.LName,
+                            Description = function.Description,
+                            CanAddToRibbon = function.CanAddToRibbon,
+                            FullClassName = function.FullClassName,
+                            AppFullClassName = function.AppFullClassName,
+                            AddInId = function.AddInId,
+                            SmallIconUrl =
+                                $"pack://application:,,,/{assemblyFullName};component/Resources/{function.Name}_16x16.png",
+                            BigIconUrl =
+                                $"pack://application:,,,/{assemblyFullName};component/Resources/{function.Name}_32x32.png",
+                            AvailProductExternalVersion = VersionData.CurrentRevitVersion,
+                            FullDescription = function.FullDescription,
+                            ToolTipHelpImage = !string.IsNullOrEmpty(function.ToolTipHelpImage)
+                                ? $"pack://application:,,,/{assemblyFullName};component/Resources/Help/{function.ToolTipHelpImage}"
+                                : string.Empty,
+                            SubPluginsNames = function.SubFunctionsNames,
+                            SubPluginsLNames = function.SubFunctionsLames,
                             SubDescriptions = function.SubDescriptions,
                             SubFullDescriptions = function.SubFullDescriptions,
                             SubBigIconsUrl = new List<string>(),
