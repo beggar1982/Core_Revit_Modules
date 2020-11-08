@@ -1,188 +1,132 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E5C56E8E-C651-4C3B-A43C-903D154F7A0D}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+   <PropertyGroup>
+    <Version>6.0.0.0</Version>
     <RootNamespace>ModPlus_Revit</RootNamespace>
-    <AssemblyName>ModPlus_Revit</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <PlatformTarget>x64</PlatformTarget>
-    <DebugType>none</DebugType>
-    <CodeAnalysisRuleSet>$(SolutionDir)\ModPlus.ruleset</CodeAnalysisRuleSet>
-    <TargetFrameworkProfile />
+    <AssemblyName>$(RootNamespace)</AssemblyName>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+
+  <PropertyGroup>
+    <Company>ModPlus Software</Company>
+    <PackageIcon>ModPlus.png</PackageIcon>
+    <Authors>ModPlus Software</Authors>
+    <Product>ModPlus</Product>
+    <Copyright>Copyright © ModPlus</Copyright>
+    <Description>ModPlus initialization loading module in Revit. The main ModPlus module for Revit, which is loaded first and loads the necessary plugins, auxiliary libraries. Contains some common helper methods</Description>
+    <PackageTags>ModPlus BIM Revit API Autodesk</PackageTags>
+    <PackageProjectUrl>https://github.com/ModPlus-Software/Core_Revit_Modules</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ModPlus-Software/Core_Revit_Modules.git</RepositoryUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageOutputPath>bin\Package</PackageOutputPath>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <Company>modplus.org</Company>
+    <Authors>modplus.org</Authors>
+    <Product>ModPlus</Product>
+    <Copyright>Copyright © ModPlus</Copyright>
+    <CodeAnalysisRuleSet>$(SolutionDir)\ModPlus.ruleset</CodeAnalysisRuleSet>
+    <Platform>x64</Platform>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Optimize>false</Optimize>
+    <Prefer32Bit>false</Prefer32Bit>
+    <UseWpf>true</UseWpf>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'R2017'">
+    <TargetFramework>net452</TargetFramework>
+    <Description>2017</Description>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'R2018'">
+    <TargetFramework>net452</TargetFramework>
+    <Description>2018</Description>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'R2019'">
+    <TargetFramework>net47</TargetFramework>
+    <Description>2019</Description>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'R2020'">
+    <TargetFramework>net47</TargetFramework>
+    <Description>2020</Description>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'R2021' or '$(Configuration)' == 'Debug'">
+    <TargetFramework>net48</TargetFramework>
+    <Description>2021</Description>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <Configurations>Debug</Configurations>
+    <DefineConstants>Debug;R$(Description)</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\ModPlus\Extensions\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;R2021</DefineConstants>
-    <AssemblyName>$(AssemblyName)_2021</AssemblyName>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
-    <DocumentationFile>
-    </DocumentationFile>
   </PropertyGroup>
-  <!-- For Revit versions -->
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'R2017|x64'">
-    <OutputPath>bin\x64\R2017\</OutputPath>
-    <DefineConstants>TRACE;R2017</DefineConstants>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <AssemblyName>$(AssemblyName)_2017</AssemblyName>
-    <DocumentationFile>bin\x64\R2017\ModPlus_Revit_2017.xml</DocumentationFile>
+
+  <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
+    <Configurations>R$(Description)</Configurations>
+    <DefineConstants>R$(Description)</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'R2018|x64'">
-    <OutputPath>bin\x64\R2018\</OutputPath>
-    <DefineConstants>TRACE;R2018</DefineConstants>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <AssemblyName>$(AssemblyName)_2018</AssemblyName>
-    <DocumentationFile>bin\x64\R2018\ModPlus_Revit_2018.xml</DocumentationFile>
+
+  <PropertyGroup>
+    <PackageId>ModPlus.Revit.Module.$(Description)</PackageId>
+    <AssemblyName>$(AssemblyName)_$(Description)</AssemblyName>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'R2019|x64'">
-    <OutputPath>bin\x64\R2019\</OutputPath>
-    <DefineConstants>TRACE;R2019</DefineConstants>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
-    <AssemblyName>$(AssemblyName)_2019</AssemblyName>
-    <DocumentationFile>bin\x64\R2019\ModPlus_Revit_2019.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'R2020|x64'">
-    <OutputPath>bin\x64\R2020\</OutputPath>
-    <DefineConstants>TRACE;R2020</DefineConstants>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
-    <AssemblyName>$(AssemblyName)_2020</AssemblyName>
-    <DocumentationFile>bin\x64\R2020\ModPlus_Revit_2020.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'R2021|x64'">
-    <OutputPath>bin\x64\R2021\</OutputPath>
-    <DefineConstants>TRACE;R2021</DefineConstants>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <AssemblyName>$(AssemblyName)_2021</AssemblyName>
-    <DocumentationFile>bin\x64\R2021\ModPlus_Revit_2021.xml</DocumentationFile>
-  </PropertyGroup>
+
+  <Choose>
+    <When Condition="'$(Configuration)'=='R2017'">
+      <ItemGroup>
+        <PackageReference Include="ModPlus.Revit.API.2017" Version="1.0.0" ExcludeAssets="runtime" />
+      </ItemGroup>
+    </When>
+    <When Condition="'$(Configuration)'=='R2018'">
+      <ItemGroup>
+        <PackageReference Include="ModPlus.Revit.API.2018" Version="1.0.0" ExcludeAssets="runtime" />
+      </ItemGroup>
+    </When>
+    <When Condition="'$(Configuration)'=='R2019'">
+      <ItemGroup>
+        <PackageReference Include="ModPlus.Revit.API.2019" Version="1.0.0" ExcludeAssets="runtime" />
+      </ItemGroup>
+    </When>
+    <When Condition="'$(Configuration)'=='R2020'">
+      <ItemGroup>
+        <PackageReference Include="ModPlus.Revit.API.2020" Version="1.0.0" ExcludeAssets="runtime" />
+      </ItemGroup>
+    </When>
+    <When Condition="'$(Configuration)'=='R2021' or '$(Configuration)'=='Debug'">
+      <ItemGroup>
+        <PackageReference Include="ModPlus.Revit.API.2021" Version="1.0.0" ExcludeAssets="runtime" />
+      </ItemGroup>
+    </When>
+  </Choose>
+
   <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
+    <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" ExcludeAssets="runtime" />
+    <PackageReference Include="ModPlusAPI" Version="5.0.0" ExcludeAssets="runtime" />
+    <PackageReference Include="ModPlusStyle" Version="3.7.0" ExcludeAssets="runtime" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="App\SettingsViewModel.cs" />
-    <Compile Include="App\SettingsWindow.xaml.cs">
-      <DependentUpon>SettingsWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="App\SettingsCommand.cs" />
-    <Compile Include="App\RibbonBuilder.cs" />
-    <Compile Include="App\UserInfoCommand.cs" />
-    <Compile Include="Helpers\LoadedPlugin.cs" />
-    <Compile Include="Helpers\LoadPluginsUtils.cs" />
-    <Compile Include="ModPlus.cs" />
-    <Compile Include="Utils\ExtensibleStorageExtensions.cs" />
-    <Compile Include="Utils\GeometryUtils.cs" />
-    <Compile Include="Utils\NumericExtensions.cs" />
-    <Compile Include="VersionData.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="ModPlus.png" Pack="true" PackagePath="" />
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\HelpBt.png" />
-  </ItemGroup>
+
   <ItemGroup>
     <Resource Include="Resources\Flags\be-BY.png" />
     <Resource Include="Resources\Flags\de-DE.png" />
     <Resource Include="Resources\Flags\en-US.png" />
     <Resource Include="Resources\Flags\ru-RU.png" />
     <Resource Include="Resources\Flags\uk-UA.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="App\SettingsWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
+    <Resource Include="Resources\forIcon_256.png" />
+    <Resource Include="Resources\HelpBt.png" />
     <Resource Include="Resources\UserInfo_32x32.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\forIcon_256.png" />
-  </ItemGroup>
-  <!-- CHOOSE -->
-  <Choose>
-    <When Condition=" '$(Configuration)'=='R2017' ">
-      <ItemGroup>
-        <PackageReference Include="ModPlus.Revit.API.2017">
-          <Version>1.0.0</Version>
-          <ExcludeAssets>runtime</ExcludeAssets>
-        </PackageReference>
-      </ItemGroup>
-    </When>
-    <When Condition=" '$(Configuration)'=='R2018' ">
-      <ItemGroup>
-        <PackageReference Include="ModPlus.Revit.API.2018">
-          <Version>1.0.0</Version>
-          <ExcludeAssets>runtime</ExcludeAssets>
-        </PackageReference>
-      </ItemGroup>
-    </When>
-    <When Condition=" '$(Configuration)'=='R2019' ">
-      <ItemGroup>
-        <PackageReference Include="ModPlus.Revit.API.2019">
-          <Version>1.0.0</Version>
-          <ExcludeAssets>runtime</ExcludeAssets>
-        </PackageReference>
-      </ItemGroup>
-    </When>
-    <When Condition=" '$(Configuration)'=='R2020' ">
-      <ItemGroup>
-        <PackageReference Include="ModPlus.Revit.API.2020">
-          <Version>1.0.0</Version>
-          <ExcludeAssets>runtime</ExcludeAssets>
-        </PackageReference>
-      </ItemGroup>
-    </When>
-    <When Condition=" '$(Configuration)'=='R2021' or '$(Configuration)'=='Debug'">
-      <ItemGroup>
-        <PackageReference Include="ModPlus.Revit.API.2021">
-          <Version>1.0.0</Version>
-          <ExcludeAssets>runtime</ExcludeAssets>
-        </PackageReference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations">
-      <Version>2020.1.0</Version>
-      <ExcludeAssets>runtime</ExcludeAssets>
-      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="ModPlusAPI">
-      <Version>4.7.0</Version>
-      <ExcludeAssets>runtime</ExcludeAssets>
-      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="ModPlusStyle">
-      <Version>3.6.0</Version>
-      <ExcludeAssets>runtime</ExcludeAssets>
-      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="StyleCop.Analyzers">
-      <Version>1.1.118</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
+  
 </Project>
