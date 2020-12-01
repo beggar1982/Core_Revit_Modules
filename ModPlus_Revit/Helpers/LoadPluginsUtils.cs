@@ -14,7 +14,7 @@ namespace ModPlus_Revit.Helpers
     /// <summary>
     /// Вспомогательные методы загрузки плагинов
     /// </summary>
-    public static class LoadPluginsUtils
+    internal static class LoadPluginsUtils
     {
         /// <summary>
         /// Список загруженных файлов в виде специального класса для последующего использования при построения ленты и меню

@@ -9,7 +9,7 @@
     /// <summary>
     /// Загруженный плагин. Свойства класса соответствуют свойствам интерфейса <see cref="IModPlusPlugin"/>
     /// </summary>
-    public class LoadedPlugin : IModPlusPlugin
+    internal class LoadedPlugin : IModPlusPlugin
     {
         /// <summary>
         /// Расположение файла плагина
