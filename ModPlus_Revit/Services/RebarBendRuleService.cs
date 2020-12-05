@@ -68,8 +68,6 @@
                         return Language.GetItem(LangName, "t1");
                     case RebarBendRuleSourceDocument.En1992:
                         return Language.GetItem(LangName, "t2");
-                    case RebarBendRuleSourceDocument.NotUse:
-                        return Language.GetItem(LangName, "t3");
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -89,11 +87,22 @@
                         return Language.GetItem(LangName, "r1");
                     case RebarBendRuleSourceDocument.En1992:
                         return Language.GetItem(LangName, "r2");
-                    case RebarBendRuleSourceDocument.NotUse:
-                        return Language.GetItem(LangName, "r3");
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Исправлять диаметры загиба согласно нормативной документации в существующих типах <see cref="RebarBarType"/>
+        /// </summary>
+        public bool FixBendInExistRebarBarTypes
+        {
+            get => !bool.TryParse(UserConfigFile.GetValue(LangName, nameof(FixBendInExistRebarBarTypes)), out var b) || b;
+            set
+            {
+                UserConfigFile.SetValue(LangName, nameof(FixBendInExistRebarBarTypes), value.ToString(), true);
+                OnPropertyChanged();
             }
         }
 
@@ -113,9 +122,6 @@
         /// <param name="showMessage">Показывать ли сообщение в случае несоответствия нормам</param>
         public void CheckAndFixRebarBend(RebarBarType rebarBarType, bool showMessage)
         {
-            if (SourceDocument == RebarBendRuleSourceDocument.NotUse)
-                return;
-
             var ruleDoc = SourceDocument;
             var barDiameter = rebarBarType.BarDiameter;
             var barDiameterInMm = rebarBarType.GetDiameterInMm();

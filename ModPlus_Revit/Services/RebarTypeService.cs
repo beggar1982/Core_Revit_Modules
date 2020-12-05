@@ -209,28 +209,6 @@
         }
 
         /// <summary>
-        /// Получение типа арматурного стержня по имени и диаметру
-        /// </summary>
-        /// <param name="rebarBarTypeName">Имя типа арматурного стержня</param>
-        /// <param name="diameterInMm">Диаметр стержня в мм</param>
-        private RebarBarType GetRebarBarType(string rebarBarTypeName, double diameterInMm)
-        {
-            if (RebarBarTypes.Any())
-            {
-                foreach (var barType in RebarBarTypes)
-                {
-                    if (Math.Abs(barType.BarDiameter - diameterInMm.MmToFt()) < 0.0001 &&
-                        barType.Name.Contains(rebarBarTypeName))
-                    {
-                        return barType;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
         /// Получение типа арматурного стержня по имени или создание по диаметру, если по имени не найден
         /// <para>В методе происходит также проверка типа арматурного стержня на соответствие нормам СП</para></summary>
         /// <param name="rebarBarTypeName">Имя типа арматурного стержня</param>
@@ -268,7 +246,8 @@
 
             if (rebarBarType != null)
             {
-                RebarBendRuleService.Instance.CheckAndFixRebarBend(rebarBarType, true);
+                if (needCreate || RebarBendRuleService.Instance.FixBendInExistRebarBarTypes)
+                    RebarBendRuleService.Instance.CheckAndFixRebarBend(rebarBarType, true);
             }
 
             return rebarBarType;
@@ -391,6 +370,28 @@
             }
 
             setProperties(CachedRebarBarTypeNames.First(), defaultDiameter);
+        }
+
+        /// <summary>
+        /// Получение типа арматурного стержня по имени и диаметру
+        /// </summary>
+        /// <param name="rebarBarTypeName">Имя типа арматурного стержня</param>
+        /// <param name="diameterInMm">Диаметр стержня в мм</param>
+        private RebarBarType GetRebarBarType(string rebarBarTypeName, double diameterInMm)
+        {
+            if (RebarBarTypes.Any())
+            {
+                foreach (var barType in RebarBarTypes)
+                {
+                    if (Math.Abs(barType.BarDiameter - diameterInMm.MmToFt()) < 0.0001 &&
+                        barType.Name.Contains(rebarBarTypeName))
+                    {
+                        return barType;
+                    }
+                }
+            }
+
+            return null;
         }
     }
 }
