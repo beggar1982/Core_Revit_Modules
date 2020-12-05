@@ -3,12 +3,14 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using Autodesk.Revit.DB;
     using JetBrains.Annotations;
 
     /// <summary>
     /// Вспомогательные утилиты работы с геометрией
     /// </summary>
+    [PublicAPI]
     public static class GeometryUtils
     {
         private const double Tolerance = 0.0001;
@@ -27,6 +29,91 @@
             return Line.CreateBound(firstPoint, secondPoint);
         }
 
+        /// <summary>
+        /// Объединить прямые линии в <see cref="CurveLoop"/>
+        /// </summary>
+        /// <param name="curveLoop"><see cref="CurveLoop"/></param>
+        public static CurveLoop MergeStraightLines(CurveLoop curveLoop)
+        {
+            return CurveLoop.Create(MergeStraightLines(curveLoop.ToList(), true));
+        }
+
+        /// <summary>
+        /// Объединить прямые линии в коллекции кривых
+        /// </summary>
+        /// <param name="curveLoop">Коллекция кривых</param>
+        /// <param name="orient">Ориентировать коллекцию кривых</param>
+        public static List<Curve> MergeStraightLines(List<Curve> curveLoop, bool orient = false)
+        {
+            var curves = new List<Curve>();
+            
+            foreach (var curve in curveLoop)
+            {
+                if (curves.Count == 0)
+                {
+                    curves.Add(curve);
+                }
+                else
+                {
+                    if (curves.Last() is Line line && curve is Line currentLine && line.NeedMerge(currentLine))
+                    {
+                        var points = GetFurthestPoints(line, currentLine);
+                        curves[curves.Count - 1] = Line.CreateBound(points.Item1, points.Item2);
+                    }
+                    else
+                    {
+                        curves.Add(curve);
+                    }
+                }
+            }
+
+            if (orient)
+                curves.Orient();
+            
+            return curves;
+        }
+
+        /// <summary>
+        /// Возвращает пару наиболее удаленных друг от друга точек двух кривых
+        /// </summary>
+        /// <param name="curve1">Первая кривая</param>
+        /// <param name="curve2">Вторя кривая</param>
+        public static Tuple<XYZ, XYZ> GetFurthestPoints(Curve curve1, Curve curve2)
+        {
+            var points = new List<XYZ>();
+            points.AddRange(curve1.Tessellate());
+            points.AddRange(curve2.Tessellate());
+            return points.GetFurthestPoints();
+        }
+
+        /// <summary>
+        /// Возвращает пару наиболее удаленных друг от друга точек
+        /// </summary>
+        /// <param name="points">Коллекция точек</param>
+        public static Tuple<XYZ, XYZ> GetFurthestPoints(this IList<XYZ> points)
+        {
+            Tuple<XYZ, XYZ> result = default;
+            var dist = double.NaN;
+            for (var i = 0; i < points.Count; i++)
+            {
+                var pt1 = points[i];
+                for (var j = 0; j < points.Count; j++)
+                {
+                    if (i == j)
+                        continue;
+                    var pt2 = points[j];
+                    var d = pt1.DistanceTo(pt2);
+                    if (double.IsNaN(dist) || d > dist)
+                    {
+                        result = new Tuple<XYZ, XYZ>(pt1, pt2);
+                        dist = d;
+                    }
+                }
+            }
+
+            return result;
+        }
+        
         /// <summary>
         /// Создание нового отрезка, на основе данного, с уменьшением длины с двух концов на указанное значение
         /// </summary>
@@ -71,9 +158,9 @@
         public static Curve GetSwapped(this Curve curve)
         {
             if (curve is Line line)
-                return line.GetSwapped();
+                return GetSwapped(line);
             if (curve is Arc arc)
-                return arc.GetSwapped();
+                return GetSwapped(arc);
 
             throw new ArgumentOutOfRangeException(nameof(curve), $"The type {curve.GetType().Name} not supported");
         }
@@ -179,7 +266,7 @@
         /// <param name="tolerance">Допуск расстояния при проверке</param>
         public static bool IsParallelTo(this Line line, Line checkedLine, double tolerance = Tolerance)
         {
-            return line.Direction.IsParallelTo(checkedLine.Direction, tolerance);
+            return IsParallelTo(line.Direction, checkedLine.Direction, tolerance);
         }
 
         /// <summary>
@@ -190,7 +277,7 @@
         /// <param name="tolerance">Допуск расстояния при проверке</param>
         public static bool IsParallelTo(this Line line, XYZ checkedVector, double tolerance = Tolerance)
         {
-            return line.Direction.IsParallelTo(checkedVector, tolerance);
+            return IsParallelTo(line.Direction, checkedVector, tolerance);
         }
 
         /// <summary>
@@ -215,7 +302,7 @@
             // Два отрезка лежат на одной прямой если каждый единичный вектор, построенный через любую пару
             // концевых точек двух отрезков, коллинеарен единичному вектору направления одного из отрезков 
 
-            if (!firstLine.IsParallelTo(secondLine))
+            if (!IsParallelTo(firstLine, secondLine))
                 return false;
 
             var firstLinePoints = firstLine.Tessellate();
@@ -228,7 +315,7 @@
                     if (Math.Abs(firstLinePoint.DistanceTo(secondLinePoint)) < tolerance)
                         continue;
                     var v = (secondLinePoint - firstLinePoint).Normalize();
-                    if (!fv.IsParallelTo(v))
+                    if (!IsParallelTo(fv, v))
                         return false;
                 }
             }
@@ -265,8 +352,8 @@
         public static Line ProjectOnto(this Plane plane, Line line)
         {
             return Line.CreateBound(
-                plane.ProjectOnto(line.GetEndPoint(0)),
-                plane.ProjectOnto(line.GetEndPoint(1)));
+                ProjectOnto(plane, line.GetEndPoint(0)),
+                ProjectOnto(plane, line.GetEndPoint(1)));
         }
 
         /// <summary>
@@ -277,6 +364,7 @@
         /// </remarks>
         /// <param name="curves">Коллекция кривых</param>
         /// <param name="tolerance">Допуск расстояния при проверке</param>
+        [Obsolete("Use Orient method")]
         public static void OrientAndContiguous(ref List<Curve> curves, double tolerance = Tolerance)
         {
             var n = curves.Count;
@@ -314,12 +402,12 @@
                     {
                         if (i + 1 == j)
                         {
-                            curves[i + 1] = curves[j].GetSwapped();
+                            curves[i + 1] = GetSwapped(curves[j]);
                         }
                         else
                         {
                             var tmp = curves[i + 1];
-                            curves[i + 1] = curves[j].GetSwapped();
+                            curves[i + 1] = GetSwapped(curves[j]);
                             curves[j] = tmp;
                         }
 
@@ -331,6 +419,70 @@
                 if (!found)
                 {
                     throw new Exception("SortCurvesContiguous:" + " non-contiguous input curves");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Ориентирование коллекции кривых
+        /// </summary>
+        /// <remarks>
+        /// http://thebuildingcoder.typepad.com/blog/2013/03/sort-and-orient-curves-to-form-a-contiguous-loop.html
+        /// </remarks>
+        /// <param name="curves">Коллекция кривых</param>
+        /// <param name="tolerance">Допуск расстояния при проверке</param>
+        public static void Orient(this List<Curve> curves, double tolerance = Tolerance)
+        {
+            var n = curves.Count;
+            for (var i = 0; i < n; i++)
+            {
+                var curve = curves[i];
+                var endPoint = curve.GetEndPoint(1);
+
+                // Find curve with start point = end point
+                var found = i + 1 >= n;
+                for (var j = i + 1; j < n; ++j)
+                {
+                    var p = curves[j].GetEndPoint(0);
+
+                    // If there is a match end->start, this is the next curve
+                    if (p.DistanceTo(endPoint) < tolerance)
+                    {
+                        if (i + 1 != j)
+                        {
+                            var tmp = curves[i + 1];
+                            curves[i + 1] = curves[j];
+                            curves[j] = tmp;
+                        }
+
+                        found = true;
+                        break;
+                    }
+
+                    p = curves[j].GetEndPoint(1);
+
+                    // If there is a match end->end, reverse the next curve
+                    if (p.DistanceTo(endPoint) < tolerance)
+                    {
+                        if (i + 1 == j)
+                        {
+                            curves[i + 1] = GetSwapped(curves[j]);
+                        }
+                        else
+                        {
+                            var tmp = curves[i + 1];
+                            curves[i + 1] = GetSwapped(curves[j]);
+                            curves[j] = tmp;
+                        }
+
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    throw new Exception("SortCurvesContiguous: non-contiguous input curves");
                 }
             }
         }
@@ -380,6 +532,12 @@
         private static bool IsEqual(double a, double b)
         {
             return IsZero(b - a);
+        }
+
+        private static bool NeedMerge(this Line line, Line otherLine)
+        {
+            return IsLieOnSameStraightLine(line, otherLine) &&
+                   HasSameEndPoint(line, otherLine);
         }
     }
 }
