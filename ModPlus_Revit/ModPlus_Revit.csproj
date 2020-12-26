@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
    <PropertyGroup>
-    <Version>6.2.2.0</Version>
+    <Version>6.2.4.0</Version>
     <RootNamespace>ModPlus_Revit</RootNamespace>
     <AssemblyName>$(RootNamespace)</AssemblyName>
   </PropertyGroup>
@@ -130,38 +130,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AssemblyAttribute Include="System.Windows.Markup.XmlnsPrefix">
-      <_Parameter1>https://modplus.org/revit/view/controls</_Parameter1>
-      <_Parameter2>coreControls</_Parameter2>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Windows.Markup.XmlnsPrefix">
-      <_Parameter1>https://modplus.org/revit/enums</_Parameter1>
-      <_Parameter2>coreEnums</_Parameter2>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Windows.Markup.XmlnsPrefix">
-      <_Parameter1>https://modplus.org/revit/services</_Parameter1>
-      <_Parameter2>coreServices</_Parameter2>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Windows.Markup.XmlnsPrefix">
-      <_Parameter1>https://modplus.org/revit/utils</_Parameter1>
-      <_Parameter2>coreUtils</_Parameter2>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Windows.Markup.XmlnsDefinition">
-      <_Parameter1>https://modplus.org/revit/view/controls</_Parameter1>
-      <_Parameter2>ModPlus_Revit.View.Controls</_Parameter2>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Windows.Markup.XmlnsDefinition">
-      <_Parameter1>https://modplus.org/revit/enums</_Parameter1>
-      <_Parameter2>ModPlus_Revit.Enums</_Parameter2>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Windows.Markup.XmlnsDefinition">
-      <_Parameter1>https://modplus.org/revit/services</_Parameter1>
-      <_Parameter2>ModPlus_Revit.Services</_Parameter2>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Windows.Markup.XmlnsDefinition">
-      <_Parameter1>https://modplus.org/revit/utils</_Parameter1>
-      <_Parameter2>ModPlus_Revit.Utils</_Parameter2>
-    </AssemblyAttribute>
+    <Folder Include="Models\" />
+    <Folder Include="Services\" />
+    <Folder Include="View\" />
   </ItemGroup>
   
 </Project>

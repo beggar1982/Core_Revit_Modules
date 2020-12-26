@@ -8,7 +8,6 @@
     using System.Reflection;
     using System.Xml.Linq;
     using Autodesk.Revit.UI;
-    using Autodesk.Revit.UI.Events;
     using Helpers;
     using Microsoft.Win32;
     using ModPlusAPI;
@@ -20,8 +19,6 @@
     /// <inheritdoc />
     public class ModPlus : IExternalApplication
     {
-        private UIControlledApplication _application;
-
         /// <inheritdoc />
         public Result OnStartup(UIControlledApplication application)
         {
@@ -30,10 +27,7 @@
                 // init lang
                 if (!Language.Initialize())
                     return Result.Cancelled;
-
-                _application = application;
-                _application.Idling += ApplicationIdling;
-
+                
                 // statistic
                 Statistic.SendModuleLoaded("Revit", VersionData.CurrentRevitVersion);
 
@@ -80,27 +74,7 @@
             ClientStarter.StopConnection();
             return Result.Succeeded;
         }
-
-        private void ApplicationIdling(object sender, IdlingEventArgs e)
-        {
-            if (sender is UIApplication uiApp)
-            {
-                try
-                {
-                    RevitInterop.Init(uiApp);
-                }
-                catch (Exception exception)
-                {
-                    ExceptionBox.Show(exception);
-                    _application.Idling -= ApplicationIdling;
-                }
-            }
-            else
-            {
-                _application.Idling -= ApplicationIdling;
-            }
-        }
-        
+                
         // Принудительная загрузка сборок
         // необходимых для работы
         private static void LoadAssemblies()
