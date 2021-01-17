@@ -11,6 +11,7 @@
     using ModPlusAPI.Enums;
     using ModPlusAPI.LicenseServer;
     using ModPlusAPI.Mvvm;
+    using ModPlusAPI.UserInfo;
     using ModPlusAPI.Windows;
     using ModPlusStyle;
     using ModPlusStyle.Controls.Dialogs;
@@ -119,6 +120,21 @@
             get => Variables.Separator;
             set => Variables.Separator = value;
         }
+        
+        /// <summary>
+        /// Запускает окно настроек уведомлений
+        /// </summary>
+        public ICommand NotificationSettingsCommand => new RelayCommandWithoutParameter(() =>
+        {
+            try
+            {
+                UserInfoService.ShowUserNotificationSettings();
+            }
+            catch (Exception exception)
+            {
+                ExceptionBox.Show(exception);
+            }
+        });
 
         #region LAN License Server
 
