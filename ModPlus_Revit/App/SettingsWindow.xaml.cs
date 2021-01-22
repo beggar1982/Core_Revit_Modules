@@ -12,6 +12,7 @@
         {
             InitializeComponent();
             Title = ModPlusAPI.Language.GetItem("RevitDlls", "h1");
+            ModPlusAPI.Language.SetLanguageProviderForResourceDictionary(Resources, "LangApi");
         }
     }
 }

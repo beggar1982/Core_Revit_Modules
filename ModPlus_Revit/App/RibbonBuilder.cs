@@ -375,16 +375,33 @@
 
             // settings
             var settingsButton = new PushButtonData(
-                "mpSettings",
+                "mprSettings",
                 Language.GetItem(LangItem, "h12"),
                 Assembly.GetExecutingAssembly().Location,
                 "ModPlus_Revit.App.SettingsCommand");
-            settingsButton.LargeImage =
-                new BitmapImage(
-                    new Uri(
-                        $"pack://application:,,,/Modplus_Revit_{VersionData.CurrentRevitVersion};component/Resources/HelpBt.png"));
+            var image = new BitmapImage(new Uri(
+                    $"pack://application:,,,/Modplus_Revit_{VersionData.CurrentRevitVersion};component/Resources/mprSettings_16x16.png"));
+            settingsButton.Image = image;
+            settingsButton.LargeImage = image;
             settingsButton.SetContextualHelp(new ContextualHelp(ContextualHelpType.Url, GetHelpUrl("mpsettings", "help")));
-            panel.AddItem(settingsButton);
+            
+            // feedback
+            var feedbackButton = new PushButtonData(
+                "mprFeedback",
+                Language.GetItem("ModPlusAPI", "f1"),
+                Assembly.GetExecutingAssembly().Location,
+                "ModPlus_Revit.App.FeedbackCommand");
+            feedbackButton.ToolTip = Language.GetItem("ModPlusAPI", "f20");
+            feedbackButton.LongDescription = Language.GetItem("ModPlusAPI", "f21");
+            image = new BitmapImage(new Uri(
+                $"pack://application:,,,/Modplus_Revit_{VersionData.CurrentRevitVersion};component/Resources/mprFeedback_16x16.png"));
+            feedbackButton.Image = image;
+            feedbackButton.LargeImage = image;
+            feedbackButton.SetContextualHelp(new ContextualHelp(ContextualHelpType.Url, GetHelpUrl("feedback", "help")));
+            
+            panel.AddStackedItems(settingsButton, feedbackButton);
+            
+            HideTextOfSmallButtons(TabName, new List<string> { "mprSettings", "mprFeedback" });
         }
 
         private static void AddPushButton(RibbonPanel panel, LoadedPlugin loadedPlugin)
