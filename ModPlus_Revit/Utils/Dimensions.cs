@@ -24,6 +24,8 @@
             if (dimension.Segments.IsEmpty)
                 return false;
 
+            var doc = dimension.Document;
+
             var reCreate = false;
             for (var i = 0; i < dimension.NumberOfSegments; i++)
             {
@@ -36,12 +38,34 @@
                 else
                 {
                     if (i == 0)
-                        referenceArray.Append(dimension.References.get_Item(i));
-                    referenceArray.Append(dimension.References.get_Item(i + 1));
+                        referenceArray.Append(dimension.References.get_Item(i).FixReference(doc));
+                    referenceArray.Append(dimension.References.get_Item(i + 1).FixReference(doc));
                 }
             }
 
             return reCreate;
+        }
+
+        private static Reference FixReference(this Reference reference, Document doc)
+        {
+            if (reference.ElementReferenceType != ElementReferenceType.REFERENCE_TYPE_LINEAR &&
+                doc.GetElement(reference.ElementId) is Grid grid)
+            {
+                foreach (var geometryObject in grid.get_Geometry(new Options
+                {
+                    ComputeReferences = true,
+                    IncludeNonVisibleObjects = true,
+                    View = doc.ActiveView
+                }))
+                {
+                    if (geometryObject is Line line && line.Reference != null)
+                    {
+                        return line.Reference;
+                    }
+                }
+            }
+
+            return reference;
         }
     }
 }
